@@ -1,0 +1,39 @@
+package geometries.impl;
+
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
+
+/**
+ * Represents a tube geometry.
+ */
+public class Tube extends RadialGeometry {
+     /**
+      * Axis ray of the tube
+      */
+     private final Ray axis;
+
+     /**
+      * Constructs a new Tube with the given axis ray and radius.
+      *
+      * @param axis The axis ray of the tube
+      * @param radius  The radius of the tube
+      */
+     public Tube(Ray axis, double radius) {
+         super(radius);
+         this.axis = axis;
+     }
+
+     @Override
+     public String toString() {
+         return super.toString() +
+                 "/nTube{" +
+                 "axisRay=" + axis +
+                 '}';
+     }
+
+    @Override
+    public Vector getNormal(Point point) {
+        return null;
+    }
+}
