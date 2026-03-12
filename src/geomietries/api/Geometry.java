@@ -1,5 +1,6 @@
 package geomietries.api;
 
+import primitives.Point;
 import primitives.Vector;
 
 /** * Abstract class representing a geometric shape in 3D space.
@@ -11,5 +12,5 @@ public abstract class Geometry {
      *
      * @return the normal vector to the surface of the geometry
      */
-    public abstract Vector getNormal();
+    public abstract Vector getNormal(Point point);
 }
