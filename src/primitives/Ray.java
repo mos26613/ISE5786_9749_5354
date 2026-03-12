@@ -10,7 +10,12 @@ public final class Ray {
     /** The origin point of the ray. */
     private final Point origin;
     /** The direction vector of the ray. */
-    private final Vector direction;
+     private final Vector direction;
+
+     //TODO: ask eliezer about the private issue
+     public Vector direction() {
+         return direction;
+     }
 
     /**
      * Constructs a ray with the given origin point and direction vector.
