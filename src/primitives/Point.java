@@ -14,7 +14,7 @@ public class Point {
     /**
      * The zero coordinates constant (0,0,0).
      */
-    public static final Double3 ZERO = Double3.ZERO;
+    public static final Point ZERO = new Point(Double3.ZERO);
 
     /**
      * Creates a point from a {@link Double3} coordinates object.
