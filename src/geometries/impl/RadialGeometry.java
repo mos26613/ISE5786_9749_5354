@@ -14,13 +14,12 @@ public abstract class RadialGeometry extends Geometry {
     private final double radiusSquared;
 
     /**
-     * Constructs a new RadialGeometry with the given radius and its square.
+     * Constructs a new RadialGeometry with the given radius.
      * @param radius The radius of the shape
-     * @param radiusSquared The square of the radius for faster calculations
      */
-    public RadialGeometry(double radius, double radiusSquared) {
+    public RadialGeometry(double radius) {
         this.radius = radius;
-        this.radiusSquared = radiusSquared;
+        this.radiusSquared = radius * radius;
     }
 
     @Override
