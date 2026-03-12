@@ -1,8 +1,8 @@
-package geomietries.impl;
+package geometries.impl;
 
 import java.util.Objects;
 
-import geomietries.api.Geometry;
+import geometries.api.Geometry;
 
 /** * Abstract class representing a geometric shape that has a radius, such as a sphere or a cylinder.
  * This class extends the {@link Geometry} class and adds properties related to the radius of the shape.

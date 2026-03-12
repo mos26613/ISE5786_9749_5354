@@ -1,8 +1,8 @@
-package geomietries.impl;
+package geometries.impl;
 
 import java.util.Objects;
 
-import geomietries.api.Geometry;
+import geometries.api.Geometry;
 import primitives.Point;
 import primitives.Vector;
 
