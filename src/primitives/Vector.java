@@ -7,7 +7,7 @@ import static primitives.Util.isZero;
  */
 public final class Vector extends Point {
 
-    // TODO: ask eliezer about theses vectors!!
+    // TODO: ask Eliezer about these vectors!!
     public static final Vector AXIS_X = new Vector(1, 0, 0);
     public static final Vector AXIS_Y = new Vector(0, 1, 0);
     public static final Vector AXIS_Z = new Vector(0, 0, 1);
@@ -108,7 +108,7 @@ public final class Vector extends Point {
      * @return the squared distance from this vector to the other vector
      */
     public double distanceSquared(Vector other) {
-        return super.distanceSquared((Point) other);
+        return super.distanceSquared(other);
     }
 
     /**
@@ -118,7 +118,7 @@ public final class Vector extends Point {
      * @return the distance from this vector to the other vector
      */
     public double distance(Vector other) {
-        return super.distance((Point) other);
+        return super.distance(other);
     }
 
     /**

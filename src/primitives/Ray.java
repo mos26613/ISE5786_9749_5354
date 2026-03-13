@@ -12,7 +12,7 @@ public final class Ray {
     /** The direction vector of the ray. */
      private final Vector direction;
 
-     //TODO: ask eliezer about the private issue
+     //TODO: ask Eliezer about the private issue
      public Vector direction() {
          return direction;
      }
