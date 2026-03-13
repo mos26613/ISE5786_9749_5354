@@ -1,7 +1,5 @@
 package geometries.impl;
 
-import java.util.Objects;
-
 import geometries.api.Geometry;
 
 /** * Abstract class representing a geometric shape that has a radius, such as a sphere or a cylinder.
@@ -9,36 +7,25 @@ import geometries.api.Geometry;
  */
 public abstract class RadialGeometry extends Geometry {
     /** Radius of the shape */
-    private final double radius;
+    private final double _radius;
     /** Square of the radius for faster calculations */
-    private final double radiusSquared;
+    private final double _radiusSquared;
 
     /**
      * Constructs a new RadialGeometry with the given radius.
      * @param radius The radius of the shape
      */
     public RadialGeometry(double radius) {
-        this.radius = radius;
-        this.radiusSquared = radius * radius;
+        this._radius = radius;
+        this._radiusSquared = radius * radius;
     }
 
     @Override
     public String toString() {
         return "RadialGeometry{" +
-                "radius=" + radius +
-                ", radiusSquared=" + radiusSquared +
+                "radius=" + _radius +
+                ", radiusSquared=" + _radiusSquared +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RadialGeometry that)) return false;
-        return Double.compare(radius, that.radius) == 0 && Double.compare(radiusSquared, that.radiusSquared) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(radius, radiusSquared);
-    }
 }

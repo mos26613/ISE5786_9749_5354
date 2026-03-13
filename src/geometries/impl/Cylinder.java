@@ -7,7 +7,7 @@ import primitives.Ray;
  */
 public class Cylinder extends Tube {
     /** Height of the cylinder */
-    private final double height;
+    private final double _height;
 
     /**
      * Constructs a cylinder with the given radius, axis, and height.
@@ -17,6 +17,6 @@ public class Cylinder extends Tube {
      */
     public Cylinder(double radius, Ray axis, double height) {
         super(radius, axis);
-        this.height = height;
+        this._height = height;
     }
 }

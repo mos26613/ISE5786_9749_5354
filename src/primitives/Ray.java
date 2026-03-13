@@ -13,6 +13,10 @@ public final class Ray {
      private final Vector direction;
 
      //TODO: ask Eliezer about the private issue
+    /**
+     * Returns the direction vector of the ray.
+     * @return the direction vector of the ray
+     */
      public Vector direction() {
          return direction;
      }

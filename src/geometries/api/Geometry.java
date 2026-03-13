@@ -9,8 +9,8 @@ import primitives.Vector;
 public abstract class Geometry {
     /**
      * Returns the normal vector to the surface of the geometry at a given point.
-     *
-     * @return the normal vector to the surface of the geometry
+     * @param point The point on the surface of the geometry where the normal vector is to be calculated.
+     * @return The normal vector to the surface of the geometry at the given point.
      */
     public abstract Vector getNormal(Point point);
 }

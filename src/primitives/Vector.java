@@ -8,8 +8,17 @@ import static primitives.Util.isZero;
 public final class Vector extends Point {
 
     // TODO: ask Eliezer about these vectors!!
+    /**
+     * Predefined unit vector along the x-axis.
+     */
     public static final Vector AXIS_X = new Vector(1, 0, 0);
+    /**
+     * Predefined unit vector along the y-axis.
+     */
     public static final Vector AXIS_Y = new Vector(0, 1, 0);
+    /**
+     * Predefined unit vector along the z-axis.
+     */
     public static final Vector AXIS_Z = new Vector(0, 0, 1);
 
     /**

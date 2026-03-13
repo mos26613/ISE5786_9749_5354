@@ -11,7 +11,7 @@ public class Tube extends RadialGeometry {
      /**
       * Axis ray of the tube
       */
-     private final Ray axis;
+     private final Ray _axis;
 
      /**
       * Constructs a new Tube with the given axis ray and radius.
@@ -21,14 +21,14 @@ public class Tube extends RadialGeometry {
       */
      public Tube(double radius, Ray axis) {
          super(radius);
-         this.axis = axis;
+         this._axis = axis;
      }
 
      @Override
      public String toString() {
          return super.toString() +
                  "/nTube{" +
-                 "axisRay=" + axis +
+                 "axisRay=" + _axis +
                  '}';
      }
 

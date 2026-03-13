@@ -3,11 +3,14 @@ package geometries.impl;
 import primitives.Point;
 import primitives.Vector;
 
+/**
+ * Represents a sphere geometry.
+ */
 public final class Sphere extends RadialGeometry {
     /**
      * Center point of the sphere
      */
-    private final Point center;
+    private final Point _center;
 
     /**
      * Constructs a new Sphere with the given center and radius.
@@ -17,14 +20,14 @@ public final class Sphere extends RadialGeometry {
      */
     public Sphere(Point center, double radius) {
         super(radius);
-        this.center = center;
+        this._center = center;
     }
 
     @Override
     public String toString() {
         return super.toString() +
                 "/nSphere{" +
-                "center=" + center +
+                "center=" + _center +
                 '}';
     }
 
