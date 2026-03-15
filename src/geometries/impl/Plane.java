@@ -26,7 +26,7 @@ public final class Plane extends Geometry {
     public Plane(Point point1, Point point2, Point point3) {
         this._point = point1;
         _normal = null;
-    } // TODO: Implement plane construction from three points
+    } // TODO: Implement plane construction from three points in later stage
 
     /**
      * Constructs a plane given a point on the plane and a normal vector.
