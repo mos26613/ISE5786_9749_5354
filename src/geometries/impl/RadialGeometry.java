@@ -7,9 +7,9 @@ import geometries.api.Geometry;
  */
 public abstract class RadialGeometry extends Geometry {
     /** Radius of the shape */
-    private final double _radius;
+    protected final double _radius;
     /** Square of the radius for faster calculations */
-    private final double _radiusSquared;
+    protected final double _radiusSquared;
 
     /**
      * Constructs a new RadialGeometry with the given radius.

@@ -7,7 +7,6 @@ import static primitives.Util.isZero;
  */
 public final class Vector extends Point {
 
-    // TODO: ask Eliezer about these vectors!!
     /**
      * Predefined unit vector along the x-axis.
      */
@@ -108,26 +107,6 @@ public final class Vector extends Point {
      */
     public double length() {
         return Math.sqrt(lengthSquared());
-    }
-
-    /**
-     * Calculates the squared distance from this vector to another vector.
-     *
-     * @param other the vector to calculate the distance to
-     * @return the squared distance from this vector to the other vector
-     */
-    public double distanceSquared(Vector other) {
-        return super.distanceSquared(other);
-    }
-
-    /**
-     * Calculates the distance from this vector to another vector.
-     *
-     * @param other the vector to calculate the distance to
-     * @return the distance from this vector to the other vector
-     */
-    public double distance(Vector other) {
-        return super.distance(other);
     }
 
     /**
