@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test class for {@link Point} class
  */
-class PointTest {
+class PointTests {
 
     /**
      * Test constants for point operations
