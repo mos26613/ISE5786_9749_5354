@@ -48,10 +48,6 @@ class VectorTests {
      * Vector (0,3,4) used in several tests
      */
     private static final Vector V034 = new Vector(0, 3, 4);
-    /**
-     * Vector (0,3,-4) used in several tests
-     */
-    private static final Vector V03N4 = new Vector(0, 3, -4);
 
     /**
      * Delta value for accuracy when comparing double values
