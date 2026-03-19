@@ -12,24 +12,41 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Test class for {@link Plane} class
  */
 class PlaneTests {
-    /** Delta for accuracy when comparing double values */
+    /**
+     * Delta for accuracy when comparing double values
+     */
     private static final double DELTA = 1e-6;
-    /** A point on the plane */
+    /**
+     * A point on the plane
+     */
     private static final Point PO = Point.ZERO;
-    /** A point on the plane */
+    /**
+     * A point on the plane
+     */
     private static final Point PX = new Point(2, 0, 0);
-    /** A point on the plane */
+    /**
+     * A point on the plane
+     */
     private static final Point PY = new Point(0, 2, 0);
-    /** A point that is on the same line as PO and PX, used for boundary value tests */
+    /**
+     * A point that is on the same line as PO and PX, used for boundary value tests
+     */
     private static final Point MIDDLE = new Point(1, 1, 0);
-    /** A normal vector to the plane */
+    /**
+     * A normal vector to the plane
+     */
     private static final Vector NORMAL = new Vector(0, 0, 1);
 
     /**
      * Default constructor for PlaneTests to satisfy Javadoc tool
      */
-    public PlaneTests() {}
+    public PlaneTests() {
+    }
 
+    /**
+     * Test method for {@link Plane#Plane(Point, Vector)}
+     *
+     */
     @Test
     void testConstructor1() {
         Plane actual = new Plane(PX, NORMAL);
@@ -41,9 +58,13 @@ class PlaneTests {
                 "Constructor not properly implemented.");
     }
 
+    /**
+     * Test method for {@link Plane#Plane(Point, Point, Point)}
+     *
+     */
     @Test
     void testConstructor2() {
-        Plane actual  = new Plane(PX, PY, PO);
+        Plane actual = new Plane(PX, PY, PO);
 
         // ============ Equivalence Partitions Tests ==============
 
@@ -68,6 +89,11 @@ class PlaneTests {
         assertThrows(IllegalArgumentException.class, () -> new Plane(PX, PY, MIDDLE),
                 "Constructor should throw an exception when given points that are on the same line");
     }
+
+    /**
+     * Test method for {@link Plane#getNormal(Point)}
+     *
+     */
     @Test
     void testGetNormal() {
         Plane plane = new Plane(PX, PY, PO);

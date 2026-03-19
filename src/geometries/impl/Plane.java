@@ -25,9 +25,11 @@ public final class Plane extends Geometry {
      */
     public Plane(Point point1, Point point2, Point point3) {
         this._point = point1;
-        _normal = null;
-    } // TODO: Implement plane construction from three points in later stage
 
+        Vector v1 = point2.subtract(point1);
+        Vector v2 = point3.subtract(point1);
+        this._normal = v1.crossProduct(v2).normalize();
+    }
     /**
      * Constructs a plane given a point on the plane and a normal vector.
      * @param _point 3D point on the plane
