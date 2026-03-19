@@ -5,17 +5,25 @@ import primitives.Vector;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test class for {@link Plane} class
  */
 class PlaneTests {
-
-    static final Point PO = Point.ZERO;
-    static final Point PX = new Point(1, 0, 0);
-    static final Point PY = new Point(0, 1, 0);
-    static final Point MIDDLE = new Point(0.5, 0.5, 0);
+    /** Delta for accuracy when comparing double values */
+    private static final double DELTA = 1e-6;
+    /** A point on the plane */
+    private static final Point PO = Point.ZERO;
+    /** A point on the plane */
+    private static final Point PX = new Point(2, 0, 0);
+    /** A point on the plane */
+    private static final Point PY = new Point(0, 2, 0);
+    /** A point that is on the same line as PO and PX, used for boundary value tests */
+    private static final Point MIDDLE = new Point(1, 1, 0);
+    /** A normal vector to the plane */
+    private static final Vector NORMAL = new Vector(0, 0, 1);
 
     /**
      * Default constructor for PlaneTests to satisfy Javadoc tool
@@ -24,10 +32,12 @@ class PlaneTests {
 
     @Test
     void testConstructor1() {
-        Point p1 = new Point(0, 0, 1);
-        Vector v1 = new Vector(3,4,0);
-        Plane actual = new Plane(p1, v1);
-        assertEquals("Point: (0.0,0.0,1.0)\nNormal: (0.6,0.8,0.0)", actual.toString(),
+        Plane actual = new Plane(PX, NORMAL);
+
+        // ============ Equivalence Partitions Tests ==============
+
+        // TC01 checks regular case
+        assertEquals("Point: (2.0,0.0,0.0)\nNormal: (0.0,0.0,1.0)", actual.toString(),
                 "Constructor not properly implemented.");
     }
 
@@ -38,7 +48,7 @@ class PlaneTests {
         // ============ Equivalence Partitions Tests ==============
 
         //EP01 checks regular case
-        assertEquals("Point: (1.0,0.0,0.0)\nNormal: (0.0,0.0,1.0)",
+        assertEquals("Point: (2.0,0.0,0.0)\nNormal: (0.0,0.0,1.0)",
                 actual.toString(),
                 "Constructor not properly implemented.");
 
@@ -46,6 +56,10 @@ class PlaneTests {
 
         //BV01 checks invalidity for 2 identical points
         assertThrows(IllegalArgumentException.class, () -> new Plane(PX, PX, PO),
+                "Constructor should throw an exception when given collinear points");
+        assertThrows(IllegalArgumentException.class, () -> new Plane(PX, PY, PX),
+                "Constructor should throw an exception when given collinear points");
+        assertThrows(IllegalArgumentException.class, () -> new Plane(PX, PY, PY),
                 "Constructor should throw an exception when given collinear points");
         //BV02 checks invalidity for 3 identical points
         assertThrows(IllegalArgumentException.class, () -> new Plane(PX, PX, PX),
@@ -56,16 +70,26 @@ class PlaneTests {
     }
     @Test
     void testGetNormal() {
-        Point p = new Point(1, 2, 3);
-        Vector v = new Vector(0.6, 0, 0.8);
-        Plane actual = new Plane(p, new Vector(3, 0, 4));
+        Plane plane = new Plane(PX, PY, PO);
+
 
         // ============ Equivalence Partitions Tests ==============
 
-        //EP01 checks that getNormal() returns correct normal given a point which isn't the Plane's "point"
-        assertEquals(v, actual.getNormal(p), "getNormal() not implemented properly");
+        // EP01: point on the plane that is not a reference point
+        Vector result = plane.getNormal(MIDDLE);
 
-        //BV01 ch
-        assertEquals(v, actual.getNormal(p), "getNormal() not implemented properly");
+        // check that the normal length is 1
+        assertEquals(1, result.length(), DELTA, "Normal is not a unit vector");
+        // check that the normal is orthogonal to the plane edges
+        assertEquals(0, result.dotProduct(PX.subtract(PO)), DELTA, "Normal is not orthogonal to the plane");
+        assertEquals(0, result.dotProduct(PY.subtract(PO)), DELTA, "Normal is not orthogonal to the plane");
+
+        // =============== Boundary Values Tests ==================
+
+        // BV01: reference point of the plane
+        result = plane.getNormal(PX);
+        assertEquals(1, result.length(), DELTA, "Normal is not a unit vector");
+        assertEquals(0, result.dotProduct(PX.subtract(PO)), DELTA, "Normal is not orthogonal to the plane");
+        assertEquals(0, result.dotProduct(PY.subtract(PO)), DELTA, "Normal is not orthogonal to the plane");
     }
 }
