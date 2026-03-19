@@ -40,10 +40,8 @@ public final class Plane extends Geometry {
 
     @Override
     public String toString() {
-        return "Plane{" +
-                "point=" + _point +
-                ", normal=" + _normal +
-                '}';
+        return "Point: " + _point +
+                "\nNormal: " + _normal;
     }
 
     @Override
