@@ -8,9 +8,6 @@ import primitives.Vector;
 
 /** Test class for {@link Sphere} class */
 class SphereTest {
-    /** Delta for accuracy when comparing double values */
-    private static final double DELTA = 1e-6;
-
     /** Default constructor for SphereTest to satisfy Javadoc tool */
     public SphereTest() {}
 
