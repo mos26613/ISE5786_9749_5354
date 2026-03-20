@@ -19,11 +19,6 @@ class CylinderTests {
      */
     public CylinderTests() {
     }
-
-    /**
-     * Precision for double comparisons
-     */
-    private static final double DELTA = 1e-6;
     /**
      * Error message for wrong normal on edge
      */
