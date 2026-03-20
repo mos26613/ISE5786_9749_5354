@@ -12,7 +12,7 @@ public class Tube extends RadialGeometry {
      /**
       * Axis ray of the tube
       */
-     private final Ray _axis;
+     protected final Ray _axis;
 
      /**
       * Constructs a new Tube with the given axis ray and radius.
