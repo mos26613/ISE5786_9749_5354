@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Test class for {@link Tube} class
  */
-class TubeTest {
+class TubeTests {
     /**
      * Delta value for accuracy of double comparisons
      */

@@ -7,12 +7,12 @@ import primitives.Vector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** Test class for {@link Triangle} class */
-class TriangleTest {
+class TriangleTests {
     /** Delta for accuracy when comparing double values */
     private static final double DELTA = 1e-6;
 
     /** Default constructor for TriangleTest to satisfy Javadoc tool */
-    public TriangleTest() {}
+    public TriangleTests() {}
 
     /** Test method for {@link Triangle#getNormal(Point)} */
     @Test

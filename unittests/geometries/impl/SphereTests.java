@@ -7,9 +7,9 @@ import primitives.Point;
 import primitives.Vector;
 
 /** Test class for {@link Sphere} class */
-class SphereTest {
+class SphereTests {
     /** Default constructor for SphereTest to satisfy Javadoc tool */
-    public SphereTest() {}
+    public SphereTests() {}
 
     /** Test method for {@link Sphere#Sphere(Point, double)} */
     @Test
