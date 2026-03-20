@@ -32,6 +32,7 @@ class CylinderTests {
      */
     private static final String ERR_SIDE = "ERROR: getNormal() wrong result for point on side surface";
 
+    /** Test method for {@link Cylinder#Cylinder(double, Ray, double)} */
     @Test
     void testConstructor() {
         Ray ray = new Ray(Point.ZERO, new Vector(0, 0, 1));

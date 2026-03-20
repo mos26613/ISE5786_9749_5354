@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test class for {@link Tube} class
  */
 class TubeTests {
+    /** Default constructor for TubeTest to satisfy Javadoc tool */
+    public TubeTests() {}
+
     /**
      * Delta value for accuracy of double comparisons
      */
