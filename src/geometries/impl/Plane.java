@@ -50,7 +50,9 @@ public final class Plane extends Geometry {
     }
 
     @Override
-    public Vector getNormal(Point point) {
+    // The parameter 'useless' is not used in this method,
+    // but it is required by the Geometry interface.
+    public Vector getNormal(Point useless) {
         return _normal;
     }
 
