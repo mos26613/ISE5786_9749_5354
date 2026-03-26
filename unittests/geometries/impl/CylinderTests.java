@@ -39,6 +39,8 @@ class CylinderTests {
         // =============== Boundary Values Tests ==================
 
         // BV01: Zero height (should be valid as it represents a degenerate cylinder)
+        // This is a valid case because the ray is parallel to the XY plane, so the cylinder is essentially a disk.
+        // The constructor should not throw an exception.
         assertDoesNotThrow(() -> new Cylinder(1, ray, 0));
 
         // BV02: Negative height (should throw an exception)
