@@ -33,11 +33,6 @@ class PlaneTests {
     private static final Point PX = new Point(1, 0, 0);
 
     /**
-     * the point (0,1,0)
-     */
-    private static final Point PY = new Point(0, 1, 0);
-
-    /**
      * the point (0,0,1)
      */
     private static final Point PZ = new Point(0, 0, 1);
