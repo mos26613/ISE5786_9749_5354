@@ -58,6 +58,21 @@ public final class Plane extends Geometry {
 
     @Override
     public List<Point> findIntersections(Ray ray) {
-        return null; // TODO: Implement the intersection logic for the plane
+        Point Q = _point;
+        Point P0 = ray.origin();
+        Vector n = _normal;
+        Vector v = ray.direction();
+        double nv = n.dotProduct(v);
+
+        if (Q.equals(P0) || nv == 0) {
+            return null;
+        } else {
+            double t = n.dotProduct(Q.subtract(P0)) / nv; // formula to find ray-plane intersection
+            if (t > 0) {
+                return List.of(P0.add(v.scale(t)));
+            } else {
+                return null;
+            }
+        }
     }
 }

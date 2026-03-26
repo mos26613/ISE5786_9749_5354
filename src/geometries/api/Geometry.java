@@ -7,6 +7,7 @@ import primitives.Vector;
  * This class serves as a base for specific geometric shapes like spheres, planes, etc.
  */
 public abstract class Geometry extends Intersectable {
+
     /** Default constructor for Geometry to satisfy Javadoc tool */
     public Geometry() {}
 
