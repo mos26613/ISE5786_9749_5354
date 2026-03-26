@@ -1,6 +1,9 @@
 package geometries.impl;
 
+import java.util.List;
+
 import primitives.Point;
+import primitives.Ray;
 import primitives.Vector;
 
 /**
@@ -34,5 +37,10 @@ public final class Sphere extends RadialGeometry {
     @Override
     public Vector getNormal(Point point) {
         return point.subtract(_center).normalize();
+    }
+
+    @Override
+    public List<Point> findIntersections(Ray ray) {
+        return null; // TODO: Implement the intersection logic for the sphere
     }
 }
