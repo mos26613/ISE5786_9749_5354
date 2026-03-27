@@ -210,6 +210,9 @@ class PlaneTests {
                 NORMAL_NOT_ORTHOGONAL_ERROR);
     }
 
+    /**
+     * Test method for {@link geometries.impl.Plane#findIntersections(Ray)}.
+     */
     @Test
     void findIntersections() {
         Plane xyPlane = new Plane(PO, V001);
