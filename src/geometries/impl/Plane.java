@@ -7,6 +7,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import static primitives.Util.alignZero;
+
 /** * Represents a plane in 3D space defined by a point and a normal vector.
  * The plane can also be defined by three non-collinear points.
  */
@@ -62,12 +64,12 @@ public final class Plane extends Geometry {
         Point P0 = ray.origin();
         Vector n = _normal;
         Vector v = ray.direction();
-        double nv = n.dotProduct(v);
+        double nv = alignZero(n.dotProduct(v));
 
         if (Q.equals(P0) || nv == 0) {
             return null;
         } else {
-            double t = n.dotProduct(Q.subtract(P0)) / nv; // formula to find ray-plane intersection
+            double t = alignZero(n.dotProduct(Q.subtract(P0)) / nv); // formula to find ray-plane intersection
             if (t > 0) {
                 return List.of(P0.add(v.scale(t)));
             } else {
