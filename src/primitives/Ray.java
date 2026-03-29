@@ -46,6 +46,19 @@ public final class Ray {
         this._direction = direction.normalize();
     }
 
+    /**
+     * Calculates a point along the ray at a distance t from the origin.
+     * @param t The distance from the origin along the ray.
+     * @return The point along the ray at distance t from the origin.
+     */
+    public Point getPoint(double t) {
+        try {
+            return _origin.add(_direction.scale(t));
+        } catch (IllegalArgumentException e) {
+            return _origin;
+        }
+    }
+
     @Override
     public String toString() {
         return "Origin: " + _origin +
