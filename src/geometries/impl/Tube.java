@@ -40,7 +40,7 @@ public class Tube extends RadialGeometry {
         Vector u = point.subtract(_axis.origin());
         double t = u.dotProduct(_axis.direction());
         if(Util.isZero(t)) return u.normalize();
-        Point o = _axis.origin().add(_axis.direction().scale(t));
+        Point o = _axis.getPoint(t);
         return point.subtract(o).normalize();
     }
 

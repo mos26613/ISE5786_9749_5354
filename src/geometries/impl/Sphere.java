@@ -66,9 +66,9 @@ public final class Sphere extends RadialGeometry {
         // No intersections if both t1 and t2 are negative
         if (t1 <= 0 && t2 <= 0) return null;
         // Return both intersections if both are positive
-        if (t1 > 0 && t2 > 0) return List.of(p0.add(v.scale(t1)), p0.add(v.scale(t2)));
+        if (t1 > 0 && t2 > 0) return List.of(ray.getPoint(t1), ray.getPoint(t2));
         // Return t2
         // If there's only one intersection, it must be using t2, because t1 is negative and t2 is positive
-        return List.of(p0.add(v.scale(t2)));
+        return List.of(ray.getPoint(t2));
     }
 }

@@ -71,7 +71,7 @@ public final class Plane extends Geometry {
         } else {
             double t = alignZero(n.dotProduct(Q.subtract(P0)) / nv); // formula to find ray-plane intersection
             if (t > 0) {
-                return List.of(P0.add(v.scale(t)));
+                return List.of(ray.getPoint(t));
             } else {
                 return null;
             }
