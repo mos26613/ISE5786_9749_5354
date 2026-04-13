@@ -34,6 +34,10 @@ class RayTests {
                 "ERROR: Ray constructor does not normalize the direction vector");
     }
 
+    /**
+     * Test for {@link Ray#getPoint(double)}.
+     * Verifies that the method correctly calculates the point at a given distance along the ray.
+     */
     @Test
     void testGetPoint() {
         Ray ray = new Ray(Point.ZERO, new Vector(0, 0, 1));
