@@ -45,11 +45,13 @@ public class Triangle extends Polygon {
         Vector v3 = P3.subtract(P0);
         Vector n1 = v1.crossProduct(v2).normalize();
         Vector n2 = v2.crossProduct(v3).normalize();
+        Vector n3 = v3.crossProduct(v1).normalize();
 
         // Signs for calculations
         double s1 = alignZero(v.dotProduct(n1));
         double s2 = alignZero(v.dotProduct(n2));
-        boolean flag = compareSign(s1, s2);
+        double s3 = alignZero(v.dotProduct(n3));
+        boolean flag = compareSign(s1, s2) && compareSign(s3, s1) ;
 
         if (flag) {
             return List.of(intersection);
