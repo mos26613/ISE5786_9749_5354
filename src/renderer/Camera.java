@@ -78,15 +78,35 @@ public class Camera implements Cloneable {
         return new Builder();
     }
 
-
+    /**
+     * Constructs a ray from the camera's position through the center of the specified pixel on the view plane.
+     * @param xIndex The horizontal index of the pixel (0-based).
+     * @param yIndex The vertical index of the pixel (0-based).
+     * @return A Ray object from the camera through the specified pixel on the view plane.
+     */
     public Ray constructRay(int xIndex, int yIndex) {
-        return null;
+
+        if (xIndex < 0 || xIndex >= _nX || yIndex < 0 || yIndex >= _nY) {
+            throw new IllegalArgumentException("Pixel indices must be within the resolution bounds");
+        }
+
+        double xJ = alignZero((xIndex - (_nX - 1) / 2.0) * _pixelWidth);
+        double yI = alignZero( - (yIndex - (_nY - 1) / 2.0) * _pixelHeight);
+
+        Point pIJ = _vpCenter;
+        if (!isZero(xJ)) pIJ = pIJ.add(_vRight.scale(xJ));
+        if (!isZero(yI)) pIJ = pIJ.add(_vUp.scale(yI));
+        return new Ray(_p0, pIJ.subtract(_p0));
     }
 
     /**
      * A builder class for constructing Camera instances with a fluent interface.
      */
     public static class Builder {
+        /**
+         * Satisfy Javadoc tool.
+         */
+        public Builder() {}
         /**
          * The Camera instance being built. The Builder modifies this instance and returns a clone of it when build() is called.
          */
