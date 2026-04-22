@@ -268,9 +268,9 @@ class CameraTests {
 
         //BV02 Rotate camera3x3 90 degrees
         Camera camera2 = fullBuilder(3).rotate(90).build();
-        assertEquals(camera3x3.constructRay(0, 0), camera2.constructRay(0, 2), ROTATE_ERROR);
-        assertEquals(camera3x3.constructRay(0, 1), camera2.constructRay(1, 2), ROTATE_ERROR);
-        assertEquals(camera3x3.constructRay(1, 0), camera2.constructRay(0, 1), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(0, 0), camera2.constructRay(2, 0), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(0, 1), camera2.constructRay(1, 0), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(1, 0), camera2.constructRay(2, 1), ROTATE_ERROR);
         assertEquals(camera3x3.constructRay(1, 1), camera2.constructRay(1, 1), ROTATE_ERROR);
 
         //BV03 Rotate camera3x3 180 degrees
@@ -282,9 +282,9 @@ class CameraTests {
 
         //BV04 Rotate camera3x3 270 degrees
         Camera camera4 = fullBuilder(3).rotate(270).build();
-        assertEquals(camera3x3.constructRay(0, 0), camera4.constructRay(2, 0), ROTATE_ERROR);
-        assertEquals(camera3x3.constructRay(0, 1), camera4.constructRay(1, 0), ROTATE_ERROR);
-        assertEquals(camera3x3.constructRay(1, 0), camera4.constructRay(2, 1), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(0, 0), camera4.constructRay(0, 2), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(0, 1), camera4.constructRay(1, 2), ROTATE_ERROR);
+        assertEquals(camera3x3.constructRay(1, 0), camera4.constructRay(0, 1), ROTATE_ERROR);
         assertEquals(camera3x3.constructRay(1, 1), camera4.constructRay(1, 1), ROTATE_ERROR);
 
         //BV05 Rotate camera3x3 360 degrees
@@ -302,9 +302,9 @@ class CameraTests {
 
         //BV07 Rotate camera4x4 90 degrees
         Camera camera7 = fullBuilder(4).rotate(90).build();
-        assertEquals(camera4x4.constructRay(0, 0), camera7.constructRay(0, 3), ROTATE_ERROR);
-        assertEquals(camera4x4.constructRay(0, 1), camera7.constructRay(1, 3), ROTATE_ERROR);
-        assertEquals(camera4x4.constructRay(1, 1), camera7.constructRay(1, 2), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(0, 0), camera7.constructRay(3, 0), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(0, 1), camera7.constructRay(2, 0), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(1, 1), camera7.constructRay(2, 1), ROTATE_ERROR);
 
         //BV08 Rotate camera4x4 180 degrees
         Camera camera8 = fullBuilder(4).rotate(180).build();
@@ -314,9 +314,9 @@ class CameraTests {
 
         //BV09 Rotate camera4x4 270 degrees
         Camera camera9 = fullBuilder(4).rotate(270).build();
-        assertEquals(camera4x4.constructRay(0, 0), camera9.constructRay(3, 0), ROTATE_ERROR);
-        assertEquals(camera4x4.constructRay(0, 1), camera9.constructRay(2, 0), ROTATE_ERROR);
-        assertEquals(camera4x4.constructRay(1, 1), camera9.constructRay(2, 1), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(0, 0), camera9.constructRay(0, 3), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(0, 1), camera9.constructRay(1, 3), ROTATE_ERROR);
+        assertEquals(camera4x4.constructRay(1, 1), camera9.constructRay(1, 2), ROTATE_ERROR);
 
         //BV10 Rotate camera4x4 360 degrees
         Camera camera10 = fullBuilder(4).rotate(360).build();

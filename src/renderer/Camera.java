@@ -80,6 +80,7 @@ public class Camera implements Cloneable {
 
     /**
      * Constructs a ray from the camera's position through the center of the specified pixel on the view plane.
+     *
      * @param xIndex The horizontal index of the pixel (0-based).
      * @param yIndex The vertical index of the pixel (0-based).
      * @return A Ray object from the camera through the specified pixel on the view plane.
@@ -91,7 +92,7 @@ public class Camera implements Cloneable {
         }
 
         double xJ = alignZero((xIndex - (_nX - 1) / 2.0) * _pixelWidth);
-        double yI = alignZero( - (yIndex - (_nY - 1) / 2.0) * _pixelHeight);
+        double yI = alignZero(-(yIndex - (_nY - 1) / 2.0) * _pixelHeight);
 
         Point pIJ = _vpCenter;
         if (!isZero(xJ)) pIJ = pIJ.add(_vRight.scale(xJ));
@@ -106,7 +107,9 @@ public class Camera implements Cloneable {
         /**
          * Satisfy Javadoc tool.
          */
-        public Builder() {}
+        public Builder() {
+        }
+
         /**
          * The Camera instance being built. The Builder modifies this instance and returns a clone of it when build() is called.
          */
@@ -209,35 +212,40 @@ public class Camera implements Cloneable {
          * @return this Builder instance for fluent chaining
          */
         public Builder rotate(double angle) {
-            double radians = Math.toRadians(angle);
-            double cos = alignZero(Math.cos(radians));
-            double sin = alignZero(Math.sin(radians));
-
-            Vector oldUp    = _camera._vUp;
-            Vector oldRight = _camera._vRight;
-
-            Vector newUp;
-            Vector newRight;
-
-            if (isZero(sin)) {
-                // angle is 0°, 180°, 360°, ...
-                newUp    = oldUp.scale(cos);
-                newRight = oldRight.scale(cos);
-            } else if (isZero(cos)) {
-                // angle is 90°, 270°, ...
-                newUp    = oldRight.scale(-sin);
-                newRight = oldUp.scale(sin);
-            } else {
-                // general case
-                newUp    = oldUp.scale(cos).subtract(oldRight.scale(sin));
-                newRight = oldRight.scale(cos).add(oldUp.scale(sin));
+            if (_camera._vTo == null || _camera._vUp == null) {
+                throw new MissingResourceException("Camera vTo or vUp are not set", Camera.class.getName(), "vTo or vUp");
+            }
+            if (!isZero(_camera._vUp.dotProduct(_camera._vTo))) {
+                throw new IllegalArgumentException("vUp and vTo must be orthogonal for rotation");
             }
 
-            _camera._vUp    = newUp;
-            _camera._vRight = newRight;
+            double radians = Math.toRadians(angle);
+            double cos = Math.cos(radians);
+            double sin = -Math.sin(radians);   // negate for clockwise
+            double oneMinusCos = 1 - cos;
+
+            Vector k = _camera._vTo;
+            Vector v = _camera._vUp;
+
+            // Rodriguez: v' = v·cos + (k×v)·sin + k·(k·v)·(1-cos)
+            Vector term1 = isZero(cos) ? null : v.scale(cos);
+            Vector term2 = isZero(sin) ? null : k.crossProduct(v).scale(sin);
+            double kDotV = alignZero(k.dotProduct(v));
+            Vector term3 = (isZero(oneMinusCos) || isZero(kDotV)) ? null : k.scale(kDotV * oneMinusCos);
+
+            _camera._vUp = sumNonNull(term1, term2, term3);
 
             return this;
         }
+
+        private static Vector sumNonNull(Vector a, Vector b, Vector c) {
+            Vector result = null;
+            if (a != null) result = a;
+            if (b != null) result = (result == null) ? b : result.add(b);
+            if (c != null) result = (result == null) ? c : result.add(c);
+            return result;
+        }
+
         /**
          * Builds and returns a Camera instance based on the parameters set in the Builder.
          * Validates the parameters and calculates necessary values before returning the Camera.
