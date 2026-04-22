@@ -10,7 +10,7 @@ final public class AmbientLight {
     /**
      * The intensity of the ambient light, represented as a color.
      */
-    private Color _intensity;
+    private final Color _intensity;
     /**
      * A constant representing the absence of ambient light, with zero intensity (black).
      */
