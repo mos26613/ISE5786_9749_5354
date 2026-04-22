@@ -201,6 +201,44 @@ public class Camera implements Cloneable {
         }
 
         /**
+         * Rotates the camera around its viewing direction (vTo) by the given angle.
+         * The rotation is clockwise when looking in the direction of vTo.
+         * Updates vUp and vRight accordingly; vTo remains unchanged.
+         *
+         * @param angle the rotation angle in degrees (clockwise)
+         * @return this Builder instance for fluent chaining
+         */
+        public Builder rotate(double angle) {
+            double radians = Math.toRadians(angle);
+            double cos = alignZero(Math.cos(radians));
+            double sin = alignZero(Math.sin(radians));
+
+            Vector oldUp    = _camera._vUp;
+            Vector oldRight = _camera._vRight;
+
+            Vector newUp;
+            Vector newRight;
+
+            if (isZero(sin)) {
+                // angle is 0°, 180°, 360°, ...
+                newUp    = oldUp.scale(cos);
+                newRight = oldRight.scale(cos);
+            } else if (isZero(cos)) {
+                // angle is 90°, 270°, ...
+                newUp    = oldRight.scale(-sin);
+                newRight = oldUp.scale(sin);
+            } else {
+                // general case
+                newUp    = oldUp.scale(cos).subtract(oldRight.scale(sin));
+                newRight = oldRight.scale(cos).add(oldUp.scale(sin));
+            }
+
+            _camera._vUp    = newUp;
+            _camera._vRight = newRight;
+
+            return this;
+        }
+        /**
          * Builds and returns a Camera instance based on the parameters set in the Builder.
          * Validates the parameters and calculates necessary values before returning the Camera.
          *
