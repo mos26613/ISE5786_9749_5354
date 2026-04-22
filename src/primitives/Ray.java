@@ -1,5 +1,6 @@
 package primitives;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -76,4 +77,27 @@ public final class Ray {
     public int hashCode() {
         return Objects.hash(_origin, _direction);
     }
+
+    /**
+     * Finds the closest point to the ray's origin from a list of points.
+     * @param points The list of points to search through.
+     * @return The closest point to the ray's origin, or null if the list is null or empty.
+     */
+    public Point findClosestPoint(List<Point> points) {
+        if (points == null) return null;
+
+        double minDistance = Double.POSITIVE_INFINITY;
+        double tmpDistance;
+        Point closestPoint = null;
+
+        for (Point point : points) {
+            tmpDistance = point.distanceSquared(_origin);
+            if (tmpDistance < minDistance) {
+                minDistance = tmpDistance;
+                closestPoint = point;
+            }
+        }
+
+        return closestPoint;
+        }
 }

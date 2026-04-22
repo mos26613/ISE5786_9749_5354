@@ -1,5 +1,7 @@
 package primitives;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +15,8 @@ class RayTests {
      * Default constructor to satisfy JavaDoc generator
      */
     public RayTests() {}
+
+    private final static String FIND_CLOSEST_POINT_ERR = "ERROR at findClosestPoint()";
 
     /**
      * Test method for {@link Ray#Ray(Point, Vector)}.
@@ -57,6 +61,34 @@ class RayTests {
         // BV01: Case - t=0
         assertEquals(Point.ZERO, ray.getPoint(0),
                 "ERROR: getPoint() does not return the origin point for t=0");
+    }
+
+    /**
+     * Test for {@link Ray#findClosestPoint(List)}.
+     */
+    @Test
+    void testFindClosestPoint() {
+        Ray ray = new Ray(Point.ZERO, new Vector(1, 0, 0));
+        Point p1 = new Point(2, 0, 0);
+        Point p2 = new Point(3, 0, 0);
+        Point p3 = new Point(4, 0, 0);
+
+        // ====== Equivalence Partitions Tests ======
+
+        // EP01: Case - A point in the middle of the list is closest to the ray
+
+        assertEquals(p1, ray.findClosestPoint(List.of(p2, p1, p3)), FIND_CLOSEST_POINT_ERR);
+
+        // ====== Boundary Values Tests ======
+
+        //BV01 Case - Gets null (empty list)
+        assertNull(ray.findClosestPoint(null), FIND_CLOSEST_POINT_ERR);
+
+        //BV02 Case - A point in the beginning of the list is closest to the ray
+        assertEquals(p1, ray.findClosestPoint(List.of(p1, p2, p3)), FIND_CLOSEST_POINT_ERR);
+
+        //BV03 Case - A point in the end of the list is closest to the ray
+        assertEquals(p1, ray.findClosestPoint(List.of(p3, p2, p1)), FIND_CLOSEST_POINT_ERR);
     }
 
 }
