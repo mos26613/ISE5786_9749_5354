@@ -238,6 +238,14 @@ public class Camera implements Cloneable {
             return this;
         }
 
+        /**
+         * Helper method to sum multiple vectors while handling null values.
+         * If a vector is null, it is treated as a zero vector and does not contribute to the sum.
+         * @param a The first vector
+         * @param b The second vector
+         * @param c The third vector
+         * @return The sum of the non-null vectors among a, b, and c. If all are null, returns null.
+         */
         private static Vector sumNonNull(Vector a, Vector b, Vector c) {
             Vector result = null;
             if (a != null) result = a;

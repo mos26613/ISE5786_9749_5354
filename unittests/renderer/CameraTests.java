@@ -26,6 +26,9 @@ import renderer.Camera.Builder;
  */
 class CameraTests {
 
+    /**
+     * Delta for comparing double values in ray direction components, to account for floating-point precision issues.
+     */
     private static final double DELTA = 1e-6;
 
     /**
@@ -78,6 +81,9 @@ class CameraTests {
      */
     private static final String ERROR_INVALID_ARGUMENT = "Expected IllegalArgumentException was not thrown";
 
+    /**
+     * Error message for incorrect camera rotation behavior.
+     */
     private static final String ROTATE_ERROR = "Rotation is wrong.";
 
     /**
@@ -232,11 +238,19 @@ class CameraTests {
         assertEquals(new Ray(LOCATION, new Vector(-2, 2, -10)), rayBV06, ERROR_CONSTRUCT_RAY);
     }
 
+    /**
+     * Helper method to create a camera builder with common test settings and specified resolution.
+     * @param n the resolution for both horizontal and vertical directions (NxN)
+     * @return initialized camera builder with location, direction, view-plane distance, size, and resolution set
+     */
     private Camera.Builder fullBuilder(int n) {
         return Camera.getBuilder().setLocation(LOCATION).setDirection(V_TO, V_UP).setVpDistance(VP_DISTANCE).setVpSize(n, n).setResolution(n, n);
 
     }
 
+    /**
+     * Test method for {@link Camera.Builder#rotate(double)}.
+     */
     @Test
     void rotateTest() {
         Camera camera3x3 = fullBuilder(3).build();
