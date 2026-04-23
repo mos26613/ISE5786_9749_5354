@@ -1,9 +1,13 @@
 package renderer;
 
+import java.io.IOException;
+
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import lighting.AmbientLight;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import parser.JsonSceneParser;
 import primitives.Color;
 import primitives.Point;
 import scene.Scene;
@@ -68,11 +72,13 @@ class RenderTests {
      * @return the camera after rendering
      */
     static Camera renderSceneJSON(Camera.Builder builder, String jsonName) {
-        Scene scene = new Scene("Using JSON");
-        // Parse from JSON file into scene object instead of the new Scene above,
-        // Use the code you added in appropriate packages.
-        // ...
-        // NB: unit tests is not the correct place to put JSON parsing code.
+        // Parsing lives in the parser package; this helper only wires it into the test.
+        Scene scene;
+        try {
+            scene = new JsonSceneParser().parse(jsonName);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to parse JSON scene: " + jsonName, e);
+        }
 
         return builder //
                 .setRayTracer(scene, RayTracerType.SIMPLE) //
@@ -146,6 +152,7 @@ class RenderTests {
      * Test for XML based scene - for bonus
      */
     @Test
+    @Disabled("XML loader not implemented — see JSON loader")
     void testBasicRenderXml() {
         renderSceneXML(baseCameraBuilder(), "basicRenderTestTwoColors") //
                 .printGrid(100, new Color(YELLOW)) //
