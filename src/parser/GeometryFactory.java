@@ -17,6 +17,7 @@ import geometries.impl.Triangle;
  * extend this factory with overloads that accept those additional attributes.
  */
 final class GeometryFactory {
+    /** Private constructor to prevent instantiation of this utility class. */
     private GeometryFactory() { /* static helpers only */ }
 
     /**
