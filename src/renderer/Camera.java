@@ -2,9 +2,11 @@ package renderer;
 
 import java.util.MissingResourceException;
 
+import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
+import scene.Scene;
 
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
@@ -64,6 +66,15 @@ public class Camera implements Cloneable {
     private double _pixelHeight;
 
     /**
+     * The ImageWriter responsible for writing the rendered image to a file.
+     */
+    private ImageWriter _imageWriter;
+    /**
+     * The RayTracer responsible for tracing rays through the scene and generating pixel colors.
+     */
+    private RayTracerBase _rayTracer;
+
+    /**
      * Private constructor to prevent direct instantiation. Use the Builder to create instances of Camera.
      */
     private Camera() {
@@ -76,6 +87,48 @@ public class Camera implements Cloneable {
      */
     public static Builder getBuilder() {
         return new Builder();
+    }
+
+    /**
+     * Renders the image by casting rays through each pixel on the view plane and writing the resulting colors to the image.
+     *
+     * @return The Camera instance after rendering the image, allowing for method chaining if desired.
+     */
+    public Camera renderImage() {
+        for (int i = 0; i < _nY; i++)
+            for (int j = 0; j < _nX; j++)
+                castRay(j, i);
+        return this;
+    }
+
+    /**
+     * Casts a ray from the camera through the specified pixel on the view plane,
+     * traces it through the scene to determine the color, and writes that color to the corresponding pixel in the image.
+     *
+     * @param xIndex The column index of the pixel (0-based).
+     * @param yIndex The row index of the pixel (0-based).
+     */
+    private void castRay(int xIndex, int yIndex) {
+        Ray ray = constructRay(xIndex, yIndex);
+        Color color = _rayTracer.traceRay(ray);
+        _imageWriter.writePixel(xIndex, yIndex, color);
+    }
+
+    /**
+     * Draws a grid on the rendered image by coloring pixels at regular intervals with the specified color.
+     * The grid lines are drawn at every 'interval' pixels along both the horizontal and vertical directions,
+     * as well as along the borders of the image.
+     *
+     * @param interval The number of pixels between each grid line. Must be a positive integer.
+     * @param color    The color to use for the grid lines.
+     * @return The Camera instance after drawing the grid, allowing for method chaining if desired.
+     */
+    public Camera printGrid(int interval, Color color) {
+        for (int i = 0; i < _nY; i++)
+            for (int j = 0; j < _nX; j++)
+                if (i % interval == 0 || j % interval == 0 || i == _nY - 1 || j == _nX - 1)
+                    _imageWriter.writePixel(j, i, color);
+        return this;
     }
 
     /**
@@ -101,9 +154,23 @@ public class Camera implements Cloneable {
     }
 
     /**
+     * Writes the rendered image to a file with the specified name.
+     *
+     * @param fileName The name of the output image file, without the extension. The image will be saved as a PNG file.
+     */
+    public void writeToImage(String fileName) {
+        _imageWriter.writeToImage(fileName);
+    }
+
+    /**
      * A builder class for constructing Camera instances with a fluent interface.
      */
     public static class Builder {
+        /**
+         * The Camera instance being built. The Builder modifies this instance and returns a clone of it when build() is called.
+         */
+        private final Camera _camera = new Camera();
+
         /**
          * Satisfy Javadoc tool.
          */
@@ -111,9 +178,21 @@ public class Camera implements Cloneable {
         }
 
         /**
-         * The Camera instance being built. The Builder modifies this instance and returns a clone of it when build() is called.
+         * Helper method to sum multiple vectors while handling null values.
+         * If a vector is null, it is treated as a zero vector and does not contribute to the sum.
+         *
+         * @param a The first vector
+         * @param b The second vector
+         * @param c The third vector
+         * @return The sum of the non-null vectors among a, b, and c. If all are null, returns null.
          */
-        private final Camera _camera = new Camera();
+        private static Vector sumNonNull(Vector a, Vector b, Vector c) {
+            Vector result = null;
+            if (a != null) result = a;
+            if (b != null) result = (result == null) ? b : result.add(b);
+            if (c != null) result = (result == null) ? c : result.add(c);
+            return result;
+        }
 
         /**
          * Sets the location of the camera in 3D space.
@@ -239,24 +318,27 @@ public class Camera implements Cloneable {
         }
 
         /**
-         * Helper method to sum multiple vectors while handling null values.
-         * If a vector is null, it is treated as a zero vector and does not contribute to the sum.
-         * @param a The first vector
-         * @param b The second vector
-         * @param c The third vector
-         * @return The sum of the non-null vectors among a, b, and c. If all are null, returns null.
+         * Sets the RayTracer for the camera based on the specified type.
+         *
+         * @param scene The scene to be used by the RayTracer for tracing rays and determining pixel colors.
+         * @param type  The type of RayTracer to use (e.g., SIMPLE).
+         * @return The Builder instance for chaining method calls.
+         * @throws IllegalArgumentException If an unsupported RayTracerType is provided.
          */
-        private static Vector sumNonNull(Vector a, Vector b, Vector c) {
-            Vector result = null;
-            if (a != null) result = a;
-            if (b != null) result = (result == null) ? b : result.add(b);
-            if (c != null) result = (result == null) ? c : result.add(c);
-            return result;
+        public Builder setRayTracer(Scene scene, RayTracerType type) {
+            switch (type) {
+                case SIMPLE -> _camera._rayTracer = new SimpleRayTracer(scene);
+
+                default -> throw new IllegalArgumentException("Unsupported RayTracerType: " + type);
+            }
+
+            return this;
         }
 
         /**
          * Builds and returns a Camera instance based on the parameters set in the Builder.
          * Validates the parameters and calculates necessary values before returning the Camera.
+         * If ray tracing is not set, a SimpleRayTracer will be used.
          *
          * @return A new Camera instance based on the parameters set in the Builder.
          * @throws IllegalArgumentException If any of the parameters are invalid (e.g., non-positive resolution, parallel vectors).
@@ -267,6 +349,10 @@ public class Camera implements Cloneable {
             checkLocationAndDirection();
             checkViewPlane();
 
+            if (_camera._rayTracer == null) {
+                setRayTracer(new Scene("test"), RayTracerType.SIMPLE);
+            }
+
             try {
                 return (Camera) _camera.clone();
             } catch (CloneNotSupportedException _) {
@@ -276,12 +362,14 @@ public class Camera implements Cloneable {
 
         /**
          * Validates the resolution parameters of the camera, ensuring that both nX and nY are positive integers.
-         * If either nX or nY is non-positive, an IllegalArgumentException is thrown with a descriptive error message.
+         * If either nX or nY is non-positive, an {@link IllegalArgumentException} is thrown with a descriptive error message.
+         * If the resolution parameters are valid, initializes the ImageWriter for the camera with the specified resolution.
          */
         private void checkResolution() {
             if (_camera._nX <= 0 || _camera._nY <= 0) {
                 throw new IllegalArgumentException("Resolution must be positive");
             }
+            _camera._imageWriter = new ImageWriter(_camera._nX, _camera._nY);
         }
 
         /**
