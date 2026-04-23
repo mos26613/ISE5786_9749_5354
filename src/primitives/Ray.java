@@ -18,6 +18,18 @@ public final class Ray {
     private final Vector _direction;
 
     /**
+     * Constructs a ray with the given origin point and direction vector.
+     * The direction vector is normalized to ensure consistent behavior.
+     *
+     * @param origin    The origin point of the ray.
+     * @param direction The direction vector of the ray.
+     */
+    public Ray(Point origin, Vector direction) {
+        this._origin = origin;
+        this._direction = direction.normalize();
+    }
+
+    /**
      * Returns the direction vector of the ray.
      *
      * @return the direction vector of the ray
@@ -36,19 +48,8 @@ public final class Ray {
     }
 
     /**
-     * Constructs a ray with the given origin point and direction vector.
-     * The direction vector is normalized to ensure consistent behavior.
-     *
-     * @param origin    The origin point of the ray.
-     * @param direction The direction vector of the ray.
-     */
-    public Ray(Point origin, Vector direction) {
-        this._origin = origin;
-        this._direction = direction.normalize();
-    }
-
-    /**
      * Calculates a point along the ray at a distance t from the origin.
+     *
      * @param t The distance from the origin along the ray.
      * @return The point along the ray at distance t from the origin.
      */
@@ -80,6 +81,7 @@ public final class Ray {
 
     /**
      * Finds the closest point to the ray's origin from a list of points.
+     *
      * @param points The list of points to search through.
      * @return The closest point to the ray's origin, or null if the list is null or empty.
      */
@@ -99,5 +101,5 @@ public final class Ray {
         }
 
         return closestPoint;
-        }
+    }
 }

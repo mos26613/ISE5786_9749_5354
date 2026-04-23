@@ -5,7 +5,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for class {@link Geometries}
@@ -15,7 +16,8 @@ class GeometriesTests {
     /**
      * Default constructor to satisfy JavaDoc generator
      */
-    public GeometriesTests() {}
+    public GeometriesTests() {
+    }
 
     /**
      * Test method for {@link Geometries#findIntersections(Ray)}.

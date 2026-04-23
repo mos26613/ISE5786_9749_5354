@@ -11,23 +11,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test class for {@link Tube} class
  */
 class TubeTests {
-    /** Default constructor for TubeTest to satisfy Javadoc tool */
-    public TubeTests() {}
-
     /**
      * Delta value for accuracy of double comparisons
      */
     private static final double DELTA = 1e-6;
-
     /**
      * Error message for wrong normal length
      */
     private static final String ERR_LENGTH = "ERROR: getNormal() result is not a unit vector";
-
     /**
      * Error message for wrong normal direction (not orthogonal to axis)
      */
     private static final String ERR_ORTHOGONAL = "ERROR: getNormal() result is not orthogonal to the tube axis";
+
+    /**
+     * Default constructor for TubeTest to satisfy Javadoc tool
+     */
+    public TubeTests() {
+    }
 
     /**
      * Test method for {@link Tube#getNormal(Point)}.

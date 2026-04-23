@@ -5,20 +5,15 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test class for {@link Cylinder} class
  */
 class CylinderTests {
-    /**
-     * Default constructor for CylinderTest to satisfy Javadoc tool
-     */
-    public CylinderTests() {
-    }
     /**
      * Error message for wrong normal on edge
      */
@@ -31,8 +26,15 @@ class CylinderTests {
      * Error message for wrong normal on side
      */
     private static final String ERR_SIDE = "ERROR: getNormal() wrong result for point on side surface";
+    /**
+     * Default constructor for CylinderTest to satisfy Javadoc tool
+     */
+    public CylinderTests() {
+    }
 
-    /** Test method for {@link Cylinder#Cylinder(double, Ray, double)} */
+    /**
+     * Test method for {@link Cylinder#Cylinder(double, Ray, double)}
+     */
     @Test
     void testConstructor() {
         Ray ray = new Ray(Point.ZERO, new Vector(0, 0, 1));

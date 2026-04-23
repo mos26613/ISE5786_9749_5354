@@ -51,7 +51,7 @@ public class Triangle extends Polygon {
         double s1 = alignZero(v.dotProduct(n1));
         double s2 = alignZero(v.dotProduct(n2));
         double s3 = alignZero(v.dotProduct(n3));
-        boolean flag = compareSign(s1, s2) && compareSign(s3, s1) ;
+        boolean flag = compareSign(s1, s2) && compareSign(s3, s1);
 
         if (flag) {
             return List.of(intersection);

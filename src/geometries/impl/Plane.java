@@ -9,7 +9,8 @@ import primitives.Vector;
 
 import static primitives.Util.alignZero;
 
-/** * Represents a plane in 3D space defined by a point and a normal vector.
+/**
+ * Represents a plane in 3D space defined by a point and a normal vector.
  * The plane can also be defined by three non-collinear points.
  */
 public final class Plane extends Geometry {
@@ -24,6 +25,7 @@ public final class Plane extends Geometry {
 
     /**
      * Constructs a plane given three points on the plane.
+     *
      * @param point1 3D point on the plane
      * @param point2 3D point on the plane
      * @param point3 3D point on the plane
@@ -35,8 +37,10 @@ public final class Plane extends Geometry {
         Vector v2 = point3.subtract(point1);
         this._normal = v1.crossProduct(v2).normalize();
     }
+
     /**
      * Constructs a plane given a point on the plane and a normal vector.
+     *
      * @param _point 3D point on the plane
      * @param normal Normal vector to the plane
      */

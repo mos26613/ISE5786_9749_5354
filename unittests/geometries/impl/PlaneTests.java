@@ -2,11 +2,10 @@ package geometries.impl;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -121,7 +120,6 @@ class PlaneTests {
      * Error message for ray not intersecting the plane
      */
     private static final String RAY_NOT_INTERSECT_ERROR = "Ray should not intersect the plane";
-
 
 
     /**

@@ -19,6 +19,7 @@ public class Geometries extends Intersectable {
 
     /**
      * Constructs a new Geometries collection with the given geometries.
+     *
      * @param geometries The geometries to add to the collection
      */
     public Geometries(Intersectable... geometries) {
@@ -27,6 +28,7 @@ public class Geometries extends Intersectable {
 
     /**
      * Adds the given geometries to the collection.
+     *
      * @param geometries The geometries to add to the collection
      */
     public void add(Intersectable... geometries) {
@@ -41,7 +43,7 @@ public class Geometries extends Intersectable {
         for (Intersectable geometry : _geometries) {
             intersections = geometry.findIntersections(ray); // delegate and get all intersection points
             if (intersections != null) { // no intersection points, skip to the next geometry
-                if  (allIntersections == null) // not initialized yet, initialize with the first geometry's intersection points
+                if (allIntersections == null) // not initialized yet, initialize with the first geometry's intersection points
                     allIntersections = new ArrayList<>();
                 allIntersections.addAll(intersections); // add the current geometry's intersection points to the final result
             }

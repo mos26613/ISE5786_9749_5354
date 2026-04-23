@@ -3,47 +3,61 @@ package geometries.impl;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import primitives.Point;
+import primitives.Ray;
+import primitives.Vector;
 
 import static java.lang.Math.sqrt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
-
-/** Test class for {@link Sphere} class */
+/**
+ * Test class for {@link Sphere} class
+ */
 class SphereTests {
 
-    /** Default constructor for SphereTests to satisfy Javadoc tool */
-    public SphereTests() {}
-
-    /** Sphere used across findIntersections test cases: center (1,0,0), radius 1 */
+    /**
+     * Sphere used across findIntersections test cases: center (1,0,0), radius 1
+     */
     private static final Sphere SPHERE = new Sphere(new Point(1, 0, 0), 1);
-
-    /** Sphere center point */
+    /**
+     * Sphere center point
+     */
     private static final Point P100 = new Point(1, 0, 0);
-
-    /** Far pole of SPHERE on the positive x-axis (on surface) */
+    /**
+     * Far pole of SPHERE on the positive x-axis (on surface)
+     */
     private static final Point P200 = new Point(2, 0, 0);
-
-    /** Near pole of SPHERE on the positive x-axis (on surface) */
+    /**
+     * Near pole of SPHERE on the positive x-axis (on surface)
+     */
     private static final Point P000 = new Point(0, 0, 0);
-
-    /** Top of SPHERE (on surface) */
+    /**
+     * Top of SPHERE (on surface)
+     */
     private static final Point P110 = new Point(1, 1, 0);
-
-    /** Unit vector in the positive x direction */
+    /**
+     * Unit vector in the positive x direction
+     */
     private static final Vector V100 = new Vector(1, 0, 0);
-
-    /** Error message for wrong number of intersection points */
+    /**
+     * Error message for wrong number of intersection points
+     */
     private static final String WRONG_COUNT = "Wrong number of intersection points";
-
-    /** Error message for wrong intersection point value */
+    /**
+     * Error message for wrong intersection point value
+     */
     private static final String WRONG_POINT = "Wrong intersection point";
-
-    /** Error message when no intersections were expected */
+    /**
+     * Error message when no intersections were expected
+     */
     private static final String NO_INTERSECTION = "Expected no intersections (null)";
+
+    /**
+     * Default constructor for SphereTests to satisfy Javadoc tool
+     */
+    public SphereTests() {
+    }
 
     /**
      * Test method for {@link Sphere#getNormal(Point)}
@@ -143,6 +157,6 @@ class SphereTests {
         // BV42: Ray starts inside sphere, direction perpendicular to [origin→center] — 1 intersection
         // origin=(1,0.5,0), vec-to-center=(0,-0.5,0), direction=(1,0,0): dot=0; distance=0.5 < radius
         result = SPHERE.findIntersections(new Ray(new Point(1, 0.5, 0), V100));
-        assertEquals(List.of(new Point(1 + sqrt(3/4.0), 0.5, 0)), result, WRONG_POINT);
+        assertEquals(List.of(new Point(1 + sqrt(3 / 4.0), 0.5, 0)), result, WRONG_POINT);
     }
 }

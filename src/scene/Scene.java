@@ -27,6 +27,7 @@ public class Scene {
 
     /**
      * Creates a new scene with the given name.
+     *
      * @param name the name of the scene
      */
     public Scene(String name) {
@@ -35,6 +36,7 @@ public class Scene {
 
     /**
      * Sets the name of the scene.
+     *
      * @param nme the new name for the scene
      * @return this scene (for method chaining)
      */
@@ -45,6 +47,7 @@ public class Scene {
 
     /**
      * Sets the background color of the scene.
+     *
      * @param background the new background color for the scene
      * @return this scene (for method chaining)
      */
@@ -55,6 +58,7 @@ public class Scene {
 
     /**
      * Sets the ambient light of the scene.
+     *
      * @param ambientLight the new ambient light for the scene
      * @return this scene (for method chaining)
      */
@@ -65,6 +69,7 @@ public class Scene {
 
     /**
      * Sets the geometries of the scene.
+     *
      * @param geometries the new geometries for the scene
      * @return this scene (for method chaining)
      */

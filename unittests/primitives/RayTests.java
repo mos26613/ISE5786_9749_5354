@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests for {@link Ray} class
@@ -12,11 +13,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class RayTests {
 
     /**
-     * Default constructor to satisfy JavaDoc generator
+     * Error message for findClosestPoint() tests
      */
-    public RayTests() {}
-
     private final static String FIND_CLOSEST_POINT_ERR = "ERROR at findClosestPoint()";
+
+    /**
+     * Default constructor to satisfy Javadoc generator
+     */
+    public RayTests() {
+    }
 
     /**
      * Test method for {@link Ray#Ray(Point, Vector)}.

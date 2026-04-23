@@ -2,23 +2,30 @@ package primitives;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Test class for {@link Point} class
  */
 class PointTests {
-    /** Default constructor for PointTest to satisfy Javadoc tool */
-    public PointTests() {}
-
     /**
      * Test constant for point operations
      */
     private static final Point POINT1 = new Point(3, 4, 0);
-    /** Test constant for point operations */
+    /**
+     * Test constant for point operations
+     */
     private static final Point POINT2 = new Point(-3, -4, 0);
-    /** Delta value for accuracy when comparing double values */
+    /**
+     * Delta value for accuracy when comparing double values
+     */
     private static final double DELTA = 1e-6;
+    /**
+     * Default constructor for PointTest to satisfy Javadoc tool
+     */
+    public PointTests() {
+    }
 
     /**
      * Test for the constructor of the Point class

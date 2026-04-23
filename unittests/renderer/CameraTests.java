@@ -1,18 +1,17 @@
 package renderer;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.MissingResourceException;
 
 import org.junit.jupiter.api.Test;
-
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 import renderer.Camera.Builder;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for class {@link Camera}.
@@ -30,61 +29,51 @@ class CameraTests {
      * Delta for comparing double values in ray direction components, to account for floating-point precision issues.
      */
     private static final double DELTA = 1e-6;
+    /**
+     * Camera location used in ray construction tests.
+     */
+    private static final Point LOCATION = Point.ZERO;
+    /**
+     * Forward direction used in tests.
+     */
+    private static final Vector V_TO = new Vector(0, 0, -5);
+    /**
+     * Up direction used in tests.
+     */
+    private static final Vector V_UP = new Vector(0, 2, 0);
+    /**
+     * Target point used in tests.
+     */
+    private static final Point TARGET = new Point(0, 0, -5);
+    /**
+     * Default view-plane distance used in tests.
+     */
+    private static final double VP_DISTANCE = 10d;
+    /**
+     * Error message for invalid ray construction.
+     */
+    private static final String ERROR_CONSTRUCT_RAY = "constructRay() result is incorrect";
+    /**
+     * Error message for unexpected exception in valid build scenario.
+     */
+    private static final String ERROR_VALID_BUILD = "Valid camera build should not throw an exception";
+    /**
+     * Error message for missing resource in camera build.
+     */
+    private static final String ERROR_MISSING_RESOURCE = "Expected MissingResourceException was not thrown";
+    /**
+     * Error message for invalid argument in camera build.
+     */
+    private static final String ERROR_INVALID_ARGUMENT = "Expected IllegalArgumentException was not thrown";
+    /**
+     * Error message for incorrect camera rotation behavior.
+     */
+    private static final String ROTATE_ERROR = "Rotation is wrong.";
 
     /**
      * Default constructor to satisfy documentation tools.
      */
     CameraTests() { /* Default constructor to satisfy documentation tools */ }
-
-    /**
-     * Camera location used in ray construction tests.
-     */
-    private static final Point LOCATION = Point.ZERO;
-
-    /**
-     * Forward direction used in tests.
-     */
-    private static final Vector V_TO = new Vector(0, 0, -5);
-
-    /**
-     * Up direction used in tests.
-     */
-    private static final Vector V_UP = new Vector(0, 2, 0);
-
-    /**
-     * Target point used in tests.
-     */
-    private static final Point TARGET = new Point(0, 0, -5);
-
-    /**
-     * Default view-plane distance used in tests.
-     */
-    private static final double VP_DISTANCE = 10d;
-
-    /**
-     * Error message for invalid ray construction.
-     */
-    private static final String ERROR_CONSTRUCT_RAY = "constructRay() result is incorrect";
-
-    /**
-     * Error message for unexpected exception in valid build scenario.
-     */
-    private static final String ERROR_VALID_BUILD = "Valid camera build should not throw an exception";
-
-    /**
-     * Error message for missing resource in camera build.
-     */
-    private static final String ERROR_MISSING_RESOURCE = "Expected MissingResourceException was not thrown";
-
-    /**
-     * Error message for invalid argument in camera build.
-     */
-    private static final String ERROR_INVALID_ARGUMENT = "Expected IllegalArgumentException was not thrown";
-
-    /**
-     * Error message for incorrect camera rotation behavior.
-     */
-    private static final String ROTATE_ERROR = "Rotation is wrong.";
 
     /**
      * Creates a basic builder with valid location and view-plane distance.
@@ -240,6 +229,7 @@ class CameraTests {
 
     /**
      * Helper method to create a camera builder with common test settings and specified resolution.
+     *
      * @param n the resolution for both horizontal and vertical directions (NxN)
      * @return initialized camera builder with location, direction, view-plane distance, size, and resolution set
      */

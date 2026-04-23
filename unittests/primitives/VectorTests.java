@@ -2,7 +2,9 @@ package primitives;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -24,11 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class VectorTests {
     /**
-     * Default constructor to satisfy JavaDoc generator
-     */
-    VectorTests() { /* to satisfy JavaDoc generator */ }
-
-    /**
      * Vector (1,0,0) used in several tests
      */
     private static final Vector V100 = new Vector(1, 0, 0);
@@ -48,12 +45,10 @@ class VectorTests {
      * Vector (0,3,4) used in several tests
      */
     private static final Vector V034 = new Vector(0, 3, 4);
-
     /**
      * Delta value for accuracy when comparing double values
      */
     private static final double DELTA = 1e-6;
-
     /**
      * Error message for wrong constructor behavior
      */
@@ -90,6 +85,10 @@ class VectorTests {
      * Error message for wrong normalize result
      */
     private static final String ERROR_NORMALIZE = "ERROR: Vector normalize() ";
+    /**
+     * Default constructor to satisfy JavaDoc generator
+     */
+    VectorTests() { /* to satisfy JavaDoc generator */ }
 
     /**
      * Test method for {@link Vector#Vector(double, double, double)}.
@@ -217,7 +216,7 @@ class VectorTests {
         // EP01: Cross product of two non-parallel vectors
         Vector result = V100.crossProduct(V034);
         // Ensure the result length equals |v1|*|v2|*sin(angle)
-        assertEquals(new Vector(0,-4,3),
+        assertEquals(new Vector(0, -4, 3),
                 result,
                 ERROR_CROSS + "wrong result");
         // Ensure the result is orthogonal to the first operand

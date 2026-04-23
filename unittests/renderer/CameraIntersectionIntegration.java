@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class CameraIntersectionIntegration {
 
-    /** Default constructor for CameraIntersectionIntegration to satisfy Javadoc tool */
-    CameraIntersectionIntegration() {}
     /**
      * Test name for sphere integration test.
      */
@@ -49,13 +47,19 @@ class CameraIntersectionIntegration {
             .setResolution(NX, NY)
             .setVpSize(3, 3)
             .build();
+    /**
+     * Default constructor for CameraIntersectionIntegration to satisfy Javadoc tool
+     */
+    CameraIntersectionIntegration() {
+    }
 
     /**
      * Helper method to assert the number of intersections between rays constructed by the Camera and a given geometry.
-     * @param camera the Camera used to construct rays
-     * @param body the geometry to test intersections with
+     *
+     * @param camera                the Camera used to construct rays
+     * @param body                  the geometry to test intersections with
      * @param expectedIntersections the expected number of intersections
-     * @param testName the name of the test for error messages
+     * @param testName              the name of the test for error messages
      */
     private void assertIntersectionsCount(Camera camera, Intersectable body, int expectedIntersections, String testName) {
         Ray ray;

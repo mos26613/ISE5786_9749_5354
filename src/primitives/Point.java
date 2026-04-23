@@ -7,14 +7,13 @@ import java.util.Objects;
  */
 public class Point {
     /**
-     * The point coordinates.
-     */
-    protected final Double3 _xyz;
-
-    /**
      * The zero coordinates constant (0,0,0).
      */
     public static final Point ZERO = new Point(Double3.ZERO);
+    /**
+     * The point coordinates.
+     */
+    protected final Double3 _xyz;
 
     /**
      * Creates a point from a {@link Double3} coordinates object.

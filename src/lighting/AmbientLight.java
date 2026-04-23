@@ -8,16 +8,17 @@ import primitives.Color;
 final public class AmbientLight {
 
     /**
-     * The intensity of the ambient light, represented as a color.
-     */
-    private final Color _intensity;
-    /**
      * A constant representing the absence of ambient light, with zero intensity (black).
      */
     public static AmbientLight NONE = new AmbientLight(Color.BLACK);
+    /**
+     * The intensity of the ambient light, represented as a color.
+     */
+    private final Color _intensity;
 
     /**
      * Constructs an AmbientLight with the specified intensity.
+     *
      * @param color the intensity of the ambient light as a Color object
      */
     public AmbientLight(Color color) {
@@ -26,7 +27,10 @@ final public class AmbientLight {
 
     /**
      * Returns the intensity of the ambient light.
+     *
      * @return the intensity of the ambient light as a Color object
      */
-    public Color getIntensity() {return _intensity;}
+    public Color getIntensity() {
+        return _intensity;
+    }
 }
