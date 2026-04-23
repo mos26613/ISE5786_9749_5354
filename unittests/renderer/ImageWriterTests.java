@@ -34,7 +34,7 @@ class ImageWriterTests {
         ImageWriter iw = new ImageWriter(N_X, N_Y);
         for (int i=0; i < N_X; i++) {
             for (int j=0; j < N_Y; j++) {
-                if (i % 50 == 0 || j % 50 == 0) {
+                if (i % 50 == 0 || j % 50 == 0 || i == N_X - 1 || j == N_Y - 1) {
                     iw.writePixel(i, j, GRID_COLOR);
                 } else {
                     iw.writePixel(i, j, SQUARE_COLOR);
