@@ -22,6 +22,7 @@ final class AttributeParser {
      */
     private static final int TRIPLE_COMPONENTS = 3;
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private AttributeParser() { /* static helpers only */ }
 
     /**
