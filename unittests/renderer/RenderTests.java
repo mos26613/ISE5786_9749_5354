@@ -120,6 +120,7 @@ class RenderTests {
 
         baseCameraBuilder() //
                 .setRayTracer(scene, RayTracerType.SIMPLE) //
+                .rotate(90)
                 .build() //
                 .renderImage() //
                 .printGrid(100, new Color(YELLOW)) //

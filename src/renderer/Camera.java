@@ -291,12 +291,7 @@ public class Camera implements Cloneable {
          * @return this Builder instance for fluent chaining
          */
         public Builder rotate(double angle) {
-            if (_camera._vTo == null || _camera._vUp == null) {
-                throw new MissingResourceException("Camera vTo or vUp are not set", Camera.class.getName(), "vTo or vUp");
-            }
-            if (!isZero(_camera._vUp.dotProduct(_camera._vTo))) {
-                throw new IllegalArgumentException("vUp and vTo must be orthogonal for rotation");
-            }
+            checkLocationAndDirection();
 
             double radians = Math.toRadians(angle);
             double cos = Math.cos(radians);
