@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/unittests" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" name="json" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" scope="TEST">
       <library name="JUnit5">
