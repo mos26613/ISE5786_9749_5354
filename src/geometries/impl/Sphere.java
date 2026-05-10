@@ -43,14 +43,14 @@ public final class Sphere extends RadialGeometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calcIntersectionsHelper(Ray ray) {
         Point p0 = ray.origin();
         Point O = _center;
         Vector v = ray.direction();
 
         // Check if the ray starts at the center of the sphere
         // Special check to avoid zero vector
-        if (p0.equals(O)) return List.of(O.add(v.scale(_radius)));
+        if (p0.equals(O)) return List.of(new Intersection(this, O.add(v.scale(_radius))));
 
         Vector u = O.subtract(p0);
         double tm = alignZero(v.dotProduct(u));
@@ -66,9 +66,10 @@ public final class Sphere extends RadialGeometry {
         // No intersections if both t1 and t2 are negative
         if (t1 <= 0 && t2 <= 0) return null;
         // Return both intersections if both are positive
-        if (t1 > 0 && t2 > 0) return List.of(ray.getPoint(t1), ray.getPoint(t2));
+        if (t1 > 0 && t2 > 0) return List.of(new Intersection(this, ray.getPoint(t1)),
+                                             new Intersection(this, ray.getPoint(t2)));
         // Return t2
         // If there's only one intersection, it must be using t2, because t1 is negative and t2 is positive
-        return List.of(ray.getPoint(t2));
+        return List.of(new Intersection(this, ray.getPoint(t2)));
     }
 }

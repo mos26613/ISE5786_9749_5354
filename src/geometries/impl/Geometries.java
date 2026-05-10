@@ -36,12 +36,12 @@ public class Geometries extends Intersectable {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
-        List<Point> allIntersections = null; // the final result
-        List<Point> intersections;
+    protected List<Intersection> calcIntersectionsHelper(Ray ray) {
+        List<Intersection> allIntersections = null; // the final result
+        List<Intersection> intersections;
 
         for (Intersectable geometry : _geometries) {
-            intersections = geometry.findIntersections(ray); // delegate and get all intersection points
+            intersections = geometry.calcIntersections(ray); // delegate and get all intersection points
             if (intersections != null) { // no intersection points, skip to the next geometry
                 if (allIntersections == null) // not initialized yet, initialize with the first geometry's intersection points
                     allIntersections = new ArrayList<>();

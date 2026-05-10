@@ -90,7 +90,7 @@ public class Polygon extends Geometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calcIntersectionsHelper(Ray ray) {
         return null; // TODO: Implement the intersection logic for the polygon
     }
 }

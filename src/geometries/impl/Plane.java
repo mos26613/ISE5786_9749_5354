@@ -63,7 +63,7 @@ public final class Plane extends Geometry {
     }
 
     @Override
-    public List<Point> findIntersections(Ray ray) {
+    protected List<Intersection> calcIntersectionsHelper(Ray ray) {
         Point Q = _point;
         Point P0 = ray.origin();
         Vector n = _normal;
@@ -75,7 +75,7 @@ public final class Plane extends Geometry {
         } else {
             double t = alignZero(n.dotProduct(Q.subtract(P0)) / nv); // formula to find ray-plane intersection
             if (t > 0) {
-                return List.of(ray.getPoint(t));
+                return List.of(new Intersection(this, ray.getPoint(t)));
             } else {
                 return null;
             }
