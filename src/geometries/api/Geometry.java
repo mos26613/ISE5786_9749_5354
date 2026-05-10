@@ -1,5 +1,6 @@
 package geometries.api;
 
+import primitives.Color;
 import primitives.Point;
 import primitives.Vector;
 
@@ -10,9 +11,33 @@ import primitives.Vector;
 public abstract class Geometry extends Intersectable {
 
     /**
+     * The emission color of the geometry, representing the light emitted by the surface.
+     * Defaults to black.
+     */
+    private Color _emission = Color.BLACK;
+
+    /**
      * Default constructor for Geometry to satisfy Javadoc tool
      */
     public Geometry() {
+    }
+
+    /**
+     * Returns the emission color of the geometry, which represents the light emitted by the surface.
+     * @return the emission color of the geometry
+     */
+    public Color getEmission() {
+        return _emission;
+    }
+
+    /**
+     * Sets the emission color of the geometry, which represents the light emitted by the surface.
+     * @param emission the emission color to set for the geometry
+     * @return the geometry instance with the updated emission color, allowing for method chaining
+     */
+    public Geometry setEmission(Color emission) {
+        _emission = emission;
+        return this;
     }
 
     /**

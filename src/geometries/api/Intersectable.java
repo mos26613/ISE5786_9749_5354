@@ -1,6 +1,7 @@
 package geometries.api;
 
 import java.util.List;
+import java.util.Objects;
 
 import primitives.Point;
 import primitives.Ray;
@@ -26,4 +27,48 @@ public abstract class Intersectable {
      * If there are no intersections, returns null.
      */
     public abstract List<Point> findIntersections(Ray ray);
+
+    /**
+     * Represents a pair of a geometry and a point of intersection on that geometry.
+     */
+    public static final class Intersection {
+        /**
+         * The geometry that is intersected by the ray.
+         */
+        public final Geometry geometry;
+        /**
+         * The point of intersection on the geometry.
+         */
+        public final Point point;
+
+        /**
+         * Constructs an Intersection with the specified geometry and point.
+         * @param geo  the geometry that is intersected by the ray
+         * @param point the point of intersection on the geometry
+         */
+        public Intersection(Geometry geo, Point point) {
+            geometry = geo;
+            this.point = point;
+        }
+
+        @Override
+        public String toString() {
+            return "Intersection{" +
+                    "geometry=" + geometry +
+                    ", point=" + point +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) return true;
+            if (!(o instanceof Intersection intersection)) return false;
+            return geometry == intersection.geometry && point.equals(intersection.point);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(geometry, point);
+        }
+    }
 }
