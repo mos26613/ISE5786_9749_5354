@@ -5,13 +5,14 @@ import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import lighting.AmbientLight;
 import primitives.Color;
+import primitives.Double3;
+import primitives.Material;
 import primitives.Point;
 import primitives.Vector;
 import scene.Scene;
@@ -118,7 +119,6 @@ class RenderStage6Tests {
     * bodies and render it into a png image with a grid
     */
    @Test
-   @Disabled("To be updated and enabled by students")
    void testRenderAmbientColor() {
       Scene scene = new Scene("Ambient colors"); // TODO by students
       scene.geometries //
@@ -127,6 +127,12 @@ class RenderStage6Tests {
               _triangleLeftBottom, // TODO by students
               _triangleRightBottom // TODO by students
          );
+      scene.setAmbientLight(new AmbientLight(new Color(255, 255, 255)));
+      _sphere.setMaterial(new Material().setKA(0.4));
+      _triangleLeftBottom.setMaterial(new Material().setKA(new Double3(0.8, 0, 0)));
+      _triangleLeftTop.setMaterial(new Material().setKA(new Double3(0, 0.8, 0)));
+      _triangleRightBottom.setMaterial(new Material().setKA(new Double3(0, 0, 0.8)));
+
       createImage(scene, "ambient render test");
    }
 }

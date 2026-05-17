@@ -3,6 +3,7 @@ package geometries.api;
 import java.util.List;
 import java.util.Objects;
 
+import primitives.Material;
 import primitives.Point;
 import primitives.Ray;
 
@@ -21,6 +22,7 @@ public abstract class Intersectable {
 
     /**
      * Abstract helper method to calculate the intersection points between the geometry and a given ray.
+     *
      * @param ray The ray that is used to find the intersection points with the geometry.
      * @return A list of Intersection objects, where each Intersection contains the geometry and the point of intersection.
      */
@@ -28,7 +30,8 @@ public abstract class Intersectable {
 
     /**
      * Calculates the intersection points between the geometry and a given ray.
-     * @param ray  The ray that is used to find the intersection points with the geometry.
+     *
+     * @param ray The ray that is used to find the intersection points with the geometry.
      * @return A list of Intersection objects, where each Intersection contains the geometry and the point of intersection.
      */
     public final List<Intersection> calcIntersections(Ray ray) {
@@ -62,15 +65,21 @@ public abstract class Intersectable {
          * The point of intersection on the geometry.
          */
         public final Point point;
+        /**
+         * The material properties of the geometry at the point of intersection.
+         */
+        public final Material material;
 
         /**
-         * Constructs an Intersection with the specified geometry and point.
-         * @param geo  the geometry that is intersected by the ray
-         * @param point the point of intersection on the geometry
+         * Constructs an Intersection object with the specified geometry and point of intersection.
+         *
+         * @param geometry The geometry that is intersected by the ray. If null, a default Material will be used.
+         * @param point    The point of intersection on the geometry.
          */
-        public Intersection(Geometry geo, Point point) {
-            geometry = geo;
+        public Intersection(Geometry geometry, Point point) {
+            this.geometry = geometry;
             this.point = point;
+            material = geometry == null ? new Material() : geometry.getMaterial();
         }
 
         @Override
