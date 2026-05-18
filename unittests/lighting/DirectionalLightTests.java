@@ -7,8 +7,17 @@ import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Unit tests for the DirectionalLight class, which represents a directional light source in a scene.
+ */
 class DirectionalLightTests {
 
+    /** Satisfy Javadoc tool */
+    DirectionalLightTests() {}
+
+    /**
+     * Tests the getL method of the DirectionalLight class.
+     */
     @Test
     void testGetL() {
         Vector X = Vector.AXIS_X;
@@ -18,6 +27,9 @@ class DirectionalLightTests {
         assertEquals(X, dl.getL(Point.ZERO), "ERROR in getL!");
     }
 
+    /**
+     * Tests the getIntensity method of the DirectionalLight class.
+     */
     @Test
     void testGetIntensity() {
         Color C = Color.BLACK;
