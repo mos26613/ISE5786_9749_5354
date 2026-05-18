@@ -30,17 +30,18 @@ public class SpotLight extends PointLight {
      * @param kc the constant attenuation factor to set
      * @return the SpotLight object itself for method chaining
      */
-    public SpotLight setKC(double kc) {
-       return (SpotLight) super.setKC(kc);
+    public SpotLight setKc(double kc) {
+       return (SpotLight) super.setKc(kc);
     }
+
 
     /**
      * Returns the direction vector from the spotlight to a given point in space.
      * @param kl the linear attenuation factor to set
      * @return the SpotLight object itself for method chaining
      */
-    public SpotLight setKL(double kl) {
-        return (SpotLight) super.setKL(kl);
+    public SpotLight setKl(double kl) {
+        return (SpotLight) super.setKl(kl);
     }
 
     /**
@@ -48,8 +49,8 @@ public class SpotLight extends PointLight {
      * @param kq the quadratic attenuation factor to set
      * @return the SpotLight object itself for method chaining
      */
-    public SpotLight setKQ(double kq) {
-        return (SpotLight) super.setKQ(kq);
+    public SpotLight setKq(double kq) {
+        return (SpotLight) super.setKq(kq);
     }
 
     @Override

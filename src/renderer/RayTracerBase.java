@@ -1,8 +1,13 @@
 package renderer;
 
+import lighting.LightSource;
 import primitives.Color;
 import primitives.Ray;
+import primitives.Vector;
 import scene.Scene;
+
+import static geometries.api.Intersectable.Intersection;
+import static primitives.Util.alignZero;
 
 /**
  * Abstract base class for ray tracers. This class defines the common interface and properties for all ray tracer implementations.
@@ -37,4 +42,34 @@ abstract class RayTracerBase {
      * @return The color resulting from tracing the ray through the scene.
      */
     abstract Color traceRay(Ray ray);
+
+    /**
+     * Preprocesses the intersection by calculating the normal vector at the intersection point and the dot product of the ray direction and the normal vector.
+     * This method is used to prepare the intersection data for shading calculations.
+     *
+     * @param intersection The intersection to be preprocessed, which contains information about the geometry and the point of intersection.
+     * @param v            The direction vector of the ray that caused the intersection.
+     * @return true if the preprocessing was successful and the ray is not parallel to the surface (i.e., vNormal is not zero), false otherwise.
+     */
+    protected boolean preprocessIntersection(Intersection intersection, Vector v) {
+        intersection.v = v;
+        intersection.normal = intersection.geometry.getNormal(intersection.point);
+        intersection.vNormal = alignZero(intersection.v.dotProduct(intersection.normal));
+        return intersection.vNormal != 0;
+    }
+
+    /**
+     * Preprocesses the light source by calculating the direction vector from the intersection point to the light source and the dot product of this direction vector and the normal vector at the intersection point.
+     * This method is used to prepare the intersection data for shading calculations involving the light source.
+     *
+     * @param intersection The intersection to be preprocessed, which contains information about the geometry and the point of intersection.
+     * @param light        The light source that is being considered for shading calculations.
+     * @return true if the preprocessing was successful and the light is not parallel to the surface (i.e., lNormal is not zero) and is on the same side as the ray (i.e., lNormal * vNormal > 0), false otherwise.
+     */
+    protected boolean preprocessLightSource(Intersection intersection, LightSource light) {
+        intersection.light = light;
+        intersection.l = light.getL(intersection.point);
+        intersection.lNormal = alignZero(intersection.l.dotProduct(intersection.normal));
+        return intersection.lNormal * intersection.vNormal > 0;
+    }
 }

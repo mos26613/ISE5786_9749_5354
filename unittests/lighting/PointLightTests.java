@@ -36,9 +36,9 @@ class PointLightTests {
     void testGetIntensity() {
         Color C = new Color(140, 140, 140);
         PointLight PL = new PointLight(C, Point.ZERO)
-                .setKC(2)
-                .setKL(2)
-                .setKQ(2);
+                .setKc(2)
+                .setKl(2)
+                .setKq(2);
 
         //EP01 - regular case
         assertEquals(new Color(10, 10, 10), PL.getIntensity(new Point(2, 0, 0)), "ERROR in getIntensity!");

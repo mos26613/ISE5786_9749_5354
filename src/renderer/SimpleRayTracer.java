@@ -2,10 +2,17 @@ package renderer;
 
 import java.util.List;
 
-import static geometries.api.Intersectable.Intersection;
+import lighting.LightSource;
 import primitives.Color;
+import primitives.Double3;
 import primitives.Ray;
+import primitives.Vector;
 import scene.Scene;
+
+import static geometries.api.Intersectable.Intersection;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.pow;
 
 /**
  * A simple ray tracer implementation that calculates the color of a point.
@@ -24,12 +31,64 @@ class SimpleRayTracer extends RayTracerBase {
      * Calculates the color at the given intersection point.
      *
      * @param intersection The point of intersection for which to calculate the color.
+     * @param v            The direction vector of the ray that caused the intersection, used for shading calculations.
      * @return The color at the intersection point.
      */
-    private Color calcColor(Intersection intersection) {
-        return _scene.ambientLight.getIntensity()
+    private Color calcColor(Intersection intersection, Vector v) {
+        return !preprocessIntersection(intersection, v) ? Color.BLACK
+                : _scene.ambientLight.getIntensity()
                 .scale(intersection.material.kA)
-                .add(intersection.geometry.getEmission());
+                .add(calcLocalEffects(intersection));
+    }
+
+    /**
+     * Calculates the local lighting effects at the given intersection point.
+     * This method iterates through all light sources in the scene and calculates the contribution of each light source to the color at the intersection point,
+     * taking into account the diffuse and specular components of the lighting.
+     *
+     * @param intersection The point of intersection for which to calculate the local lighting effects.
+     * @return The color contribution from all light sources at the intersection point, which is a combination of diffuse and specular components.
+     */
+    private Color calcLocalEffects(Intersection intersection) {
+        Color color = intersection.geometry.getEmission();
+        for (LightSource lightSource : _scene.lights) {
+            if (preprocessLightSource(intersection, lightSource)) {
+                color = color.add(
+                        lightSource.getIntensity(intersection.point)
+                                .scale(calcDiffuse(intersection)
+                                        .add(calcSpecular(intersection))));
+            }
+        }
+        return color;
+    }
+
+    /**
+     * Calculates the diffuse component of the lighting at the given intersection point.
+     * The diffuse component is calculated based on the material's diffuse coefficient (kD) and the angle between the light source and the surface normal.
+     *
+     * @param intersection The point of intersection for which to calculate the diffuse component.
+     * @return The diffuse color contribution at the intersection point, which is a scaled version of the material's diffuse coefficient based on the angle of incidence.
+     */
+    private Double3 calcDiffuse(Intersection intersection) {
+        return intersection.material.kD
+                .scale(abs(intersection.lNormal));
+    }
+
+    /**
+     * Calculates the specular component of the lighting at the given intersection point.
+     *
+     * @param intersection The point of intersection for which to calculate the specular component.
+     * @return The specular color contribution at the intersection point,
+     * which is a scaled version of the material's specular coefficient based on the angle of reflection and the viewer's direction.
+     */
+    private Double3 calcSpecular(Intersection intersection) {
+        Vector v = intersection.normal.scale(2 * intersection.lNormal);
+        Vector r = intersection.l
+                .subtract(v)
+                .normalize();
+        double vR = intersection.v.dotProduct(r);
+        return intersection.material.kS
+                .scale(pow(max(0, -vR), intersection.material.nShininess));
     }
 
     /**
@@ -45,6 +104,6 @@ class SimpleRayTracer extends RayTracerBase {
     Color traceRay(Ray ray) {
         List<Intersection> intersections = _scene.geometries.calcIntersections(ray);
         if (intersections == null) return _scene.background;
-        return calcColor(ray.findClosestIntersection(intersections));
+        return calcColor(ray.findClosestIntersection(intersections), ray.direction());
     }
 }

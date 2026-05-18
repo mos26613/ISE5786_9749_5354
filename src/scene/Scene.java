@@ -1,7 +1,11 @@
 package scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import geometries.impl.Geometries;
 import lighting.AmbientLight;
+import lighting.LightSource;
 import primitives.Color;
 
 /**
@@ -20,6 +24,10 @@ public class Scene {
      * Ambient light in the scene (used as a default light source when no other lights are defined)
      */
     public AmbientLight ambientLight = AmbientLight.NONE;
+    /**
+     * Collection of light sources in the scene (used for lighting calculations)
+     */
+    public List<LightSource> lights = new ArrayList<>();
     /**
      * Collection of geometries in the scene (used for ray tracing and intersection tests)
      */

@@ -36,9 +36,9 @@ class SpotLightTests {
     @Test
     void testGetIntensity() {
         SpotLight SL = new SpotLight(new Color(140, 140, 140), Point.ZERO, Vector.AXIS_X)
-                .setKC(2d)
-                .setKL(2d)
-                .setKQ(2d);
+                .setKc(2d)
+                .setKl(2d)
+                .setKq(2d);
 
         // === Equivalence Partitions Tests ===
 
