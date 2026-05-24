@@ -57,6 +57,11 @@ public class PointLight extends Light implements LightSource {
         return _intensity.scale(1d / attenuation);
     }
 
+    @Override
+    public double getDistance(Point point) {
+        return _position.distance(point);
+    }
+
     /**
      * Sets the constant attenuation factor for the point light.
      * @param kc the constant attenuation factor to set

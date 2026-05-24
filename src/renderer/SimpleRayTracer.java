@@ -13,11 +13,18 @@ import static geometries.api.Intersectable.Intersection;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.pow;
+import static primitives.Util.alignZero;
 
 /**
  * A simple ray tracer implementation that calculates the color of a point.
  */
 class SimpleRayTracer extends RayTracerBase {
+
+    /**
+     * A small constant used to offset the intersection point when checking for shadows, to avoid self-shadowing issues.
+     */
+    private static final double DELTA = 0.1;
+
     /**
      * Creates a new SimpleRayTracer for the given scene.
      *
@@ -25,6 +32,30 @@ class SimpleRayTracer extends RayTracerBase {
      */
     SimpleRayTracer(Scene scene) {
         super(scene);
+    }
+
+    /**
+     * Checks if the given intersection point is unshaded with respect to the light source,
+     * meaning that there are no geometries blocking the light from reaching the point.
+     * @param intersection The intersection point to check for shadows
+     * @return true if the point is unshaded (not in shadow), false if it is shaded (in shadow)
+     */
+    private boolean unshaded(Intersection intersection) {
+        Vector pointToLight = intersection.l.scale(-1);
+        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? DELTA : -DELTA);
+        Ray shadowRay = new Ray(intersection.point.add(delta), pointToLight);
+
+        var shadowIntersections = _scene.geometries.findIntersections(shadowRay);
+        if (shadowIntersections == null) return true;
+        else {
+            double lightDistance = intersection.light.getDistance(intersection.point);
+            for (var shadowIntersection : shadowIntersections) {
+                if (alignZero(intersection.point.distance(shadowIntersection) - lightDistance) < 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     /**
@@ -37,8 +68,8 @@ class SimpleRayTracer extends RayTracerBase {
     private Color calcColor(Intersection intersection, Vector v) {
         return !preprocessIntersection(intersection, v) ? Color.BLACK
                 : _scene.ambientLight.getIntensity()
-                .scale(intersection.material.kA)
-                .add(calcLocalEffects(intersection));
+                  .scale(intersection.material.kA)
+                  .add(calcLocalEffects(intersection));
     }
 
     /**
@@ -53,10 +84,12 @@ class SimpleRayTracer extends RayTracerBase {
         Color color = intersection.geometry.getEmission();
         for (LightSource lightSource : _scene.lights) {
             if (preprocessLightSource(intersection, lightSource)) {
+                if (unshaded(intersection)) {
                 color = color.add(
                         lightSource.getIntensity(intersection.point)
                                 .scale(calcDiffuse(intersection)
                                         .add(calcSpecular(intersection))));
+                }
             }
         }
         return color;
