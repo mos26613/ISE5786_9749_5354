@@ -101,16 +101,16 @@ class ShadowTests {
    void testSphereTriangleSpot1() {
       sphereTriangleHelper("shadowSphereTriangleSpot1", //
                            new Triangle(new Point(-70, -40, 0), new Point(-40, -70, 0), new Point(-68, -68, -4)), //
-                           new Point(-100, -100, 200));
+                           new Point(-100, -100, 150));
    }
 
-//   /** Sphere-Triangle shading - move spot even more close */
-//   @Test
-//   void testSphereTriangleSpot2() {
-//      sphereTriangleHelper("shadowSphereTriangleSpot2", //
-//                           new Triangle(new Point(-70, -40, 0), new Point(-40, -70, 0), new Point(-68, -68, -4)), //
-//                           new Point(???));
-//   }
+   /** Sphere-Triangle shading - move spot even more close */
+   @Test
+   void testSphereTriangleSpot2() {
+      sphereTriangleHelper("shadowSphereTriangleSpot2", //
+                           new Triangle(new Point(-70, -40, 0), new Point(-40, -70, 0), new Point(-68, -68, -4)), //
+                           new Point(-85,-85,100));
+   }
 
    /**
     * Produce a picture of a two triangles lighted by a spot light with a Sphere
