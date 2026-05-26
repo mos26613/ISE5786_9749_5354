@@ -24,6 +24,15 @@ public final class Material {
      */
     public Double3 kD = Double3.ZERO;
     /**
+     * Transparency coefficient (kT) represents the proportion of light that passes through the material, indicating its transparency.
+     */
+    public Double3 kT = Double3.ZERO;
+
+    /**
+     * Reflection coefficient (kR) represents the proportion of light that is reflected by the material, indicating its reflectivity.
+     */
+    public Double3 kR = Double3.ZERO;
+    /**
      * Shininess represents the shininess of the material.
      */
     public int nShininess = 0;
@@ -91,6 +100,48 @@ public final class Material {
      */
     public Material setKD(double d) {
         this.kD = new Double3(d);
+        return this;
+    }
+
+
+    /**
+     *  Sets the transparency coefficient (kT) using a Double3 object.
+     * @param kT The Double3 object representing the transparency coefficient.
+     * @return The Material instance with the updated transparency coefficient.
+     */
+    public Material setKT(Double3 kT) {
+        this.kT = kT;
+        return this;
+    }
+
+    /**
+     * Sets the transparency coefficient (kT) using a double value.
+     * @param d The double value representing the transparency coefficient.
+     * @return The Material instance with the updated transparency coefficient.
+     */
+    public Material setKT(double d) {
+        this.kT = new Double3(d);
+        return this;
+    }
+
+    /**
+     * Sets the reflection coefficient (kR) using a Double3 object.
+     * @param kR The Double3 object representing the reflection coefficient.
+     * @return The Material instance with the updated reflection coefficient.
+     */
+    public Material setKR(Double3 kR) {
+        this.kR = kR;
+        return this;
+    }
+
+
+    /**
+     * Sets the reflection coefficient (kR) using a Double3 object.
+     * @param d The double value representing the reflection coefficient.
+     * @return The Material instance with the updated reflection coefficient.
+     */
+    public Material setKR(double d) {
+        this.kR = new Double3(d);
         return this;
     }
 
