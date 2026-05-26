@@ -80,21 +80,20 @@ class ShadowTests {
                            new Point(-100, -100, 200));
    }
 
-//   /** Sphere-Triangle shading - move triangle up-right */
-//   @Test
-//   void testSphereTriangleMove1() {
-//      sphereTriangleHelper("shadowSphereTriangleMove2", //
-//                           new Triangle(new Point(???), new Point(???), new Point(???)), //
-//                           new Point(-100, -100, 200));
-//   }
-//
-//   /** Sphere-Triangle shading - move triangle upper-righter */
-//   @Test
-//   void testSphereTriangleMove2() {
-//      sphereTriangleHelper("shadowSphereTriangleMove1", //
-//                           new Triangle(new Point(???), new Point(???), new Point(???)), //
-//                           new Point(-100, -100, 200));
-//   }
+      /** Sphere-Triangle shading - move triangle up-right */
+   @Test
+   void testSphereTriangleMove1() {
+      sphereTriangleHelper("shadowSphereTriangleMove1", //
+                           new Triangle(new Point(-50, -25, -100), new Point(-25, -50, -100), new Point(-48, -48, -104)), //
+                           new Point(-100, -100, 200));
+   }
+   /** Sphere-Triangle shading - move triangle upper-righter */
+   @Test
+   void testSphereTriangleMove2() {
+      sphereTriangleHelper("shadowSphereTriangleMove2", //
+              new Triangle(new Point(-45, -15, 0), new Point(-15, -45, 0), new Point(-43, -43, -4)), //
+              new Point(-100, -100, 200));
+   }
 
    /** Sphere-Triangle shading - move spot closer */
    @Test
@@ -104,7 +103,7 @@ class ShadowTests {
                            new Point(-100, -100, 150));
    }
 
-   /** Sphere-Triangle shading - move spot even more close */
+   /** Sphere-Triangle shading - move spot even closer */
    @Test
    void testSphereTriangleSpot2() {
       sphereTriangleHelper("shadowSphereTriangleSpot2", //
