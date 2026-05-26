@@ -1,7 +1,5 @@
 package renderer;
 
-import java.util.List;
-
 import lighting.LightSource;
 import primitives.Color;
 import primitives.Double3;
@@ -159,7 +157,8 @@ class SimpleRayTracer extends RayTracerBase {
      * @param level The current recursion level, which limits the depth of recursive calls for reflections and refractions.
      * @param k     The initial color contribution factor, which is used to optimize the ray tracing process by ignoring contributions that are too small to affect the final color significantly.
      * @param kx    The attenuation factor for the specific global effect being calculated (kR for reflections or kT for refractions), which is used to optimize the ray tracing process by ignoring contributions that are too small to affect the final color significantly.
-     * @return
+     * @return The color contribution from the global effect (reflection or refraction) for the given ray,
+     * which is determined by tracing the ray through the scene and calculating the color at the closest intersection point, if any.
      */
     private Color calcGlobalEffect(Ray ray, int level, Double3 k, Double3 kx) {
         Double3 kkx = k.product(kx);
