@@ -76,7 +76,7 @@ public abstract class Intersectable {
          */
         public Vector normal;
         /**
-         * The vector from the intersection point to the view point, used for lighting calculations.
+         * The vector from the view point to the intersection point, used for lighting calculations.
          */
         public Vector v;
         /**
