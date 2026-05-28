@@ -4,12 +4,17 @@ import java.util.List;
 import java.util.Objects;
 
 import static geometries.api.Intersectable.Intersection;
+import static primitives.Util.alignZero;
 
 /**
  * Represents a ray in 3D Cartesian space, defined by an origin point and a direction vector.
  * The direction vector is normalized to ensure consistent behavior in geometric computations.
  */
 public final class Ray {
+    /**
+     * A small constant used to adjust the ray's origin to prevent self-intersection issues.
+     */
+    private static final double DELTA = 0.1;
     /**
      * The origin point of the ray.
      */
@@ -28,6 +33,20 @@ public final class Ray {
      */
     public Ray(Point origin, Vector direction) {
         this._origin = origin;
+        this._direction = direction.normalize();
+    }
+
+    /**
+     * Constructs a ray with the given origin point, direction vector, and normal vector.
+     * The ray's origin is adjusted slightly along the normal vector to prevent self-intersection issues.
+     *
+     * @param origin    The origin point of the ray.
+     * @param direction The direction vector of the ray.
+     * @param normal    The normal vector used to adjust the ray's origin to prevent self-intersection.
+     */
+    public Ray(Point origin, Vector direction, Vector normal) {
+        double dn = alignZero(direction.dotProduct(normal));
+        this._origin = dn == 0 ? origin : origin.add(normal.scale(dn > 0 ? DELTA : -DELTA));
         this._direction = direction.normalize();
     }
 
@@ -90,12 +109,13 @@ public final class Ray {
     public Point findClosestPoint(List<Point> points) {
         return points == null ? null
                 : findClosestIntersection(points.stream()
-                                          .map(p -> new Intersection(null, p))
-                                          .toList()).point;
+                .map(p -> new Intersection(null, p))
+                .toList()).point;
     }
 
     /**
      * Finds the closest intersection to the ray's origin from a list of intersections.
+     *
      * @param intersections The list of intersections to search through.
      * @return The closest intersection to the ray's origin, or null if the list is null or empty.
      */

@@ -17,11 +17,6 @@ import static primitives.Util.alignZero;
  * A simple ray tracer implementation that calculates the color of a point.
  */
 class SimpleRayTracer extends RayTracerBase {
-
-    /**
-     * A small constant used to offset the intersection point when checking for shadows, to avoid self-shadowing issues.
-     */
-    private static final double DELTA = 0.1;
     /**
      * The maximum recursion level for calculating color, which limits the depth of recursive calls when calculating reflections and refractions.
      */
@@ -54,8 +49,7 @@ class SimpleRayTracer extends RayTracerBase {
      */
     private boolean unshaded(Intersection intersection) {
         Vector pointToLight = intersection.l.scale(-1);
-        Vector delta = intersection.normal.scale(intersection.lNormal < 0 ? DELTA : -DELTA);
-        Ray shadowRay = new Ray(intersection.point.add(delta), pointToLight);
+        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
 
         var shadowIntersections = _scene.geometries.calcIntersections(shadowRay);
         if (shadowIntersections == null) return true;
@@ -94,7 +88,8 @@ class SimpleRayTracer extends RayTracerBase {
      * @return The color at the intersection point, which is a combination of local lighting effects and contributions from reflections and refractions.
      */
     private Color calcColor(Intersection intersection, int level, Double3 k) {
-        return calcLocalEffects(intersection);
+        return calcLocalEffects(intersection)
+                .add(calcGlobalEffects(intersection, level, k));
     }
 
     /**
@@ -195,8 +190,7 @@ class SimpleRayTracer extends RayTracerBase {
         Vector tmp = intersection.normal.scale(2 * intersection.vNormal);
         Vector r = intersection.v
                 .subtract(tmp);
-        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? DELTA : -DELTA);
-        return new Ray(intersection.point.add(delta), r);
+        return new Ray(intersection.point, r,intersection.normal); // TODO
     }
 
     /**
@@ -206,8 +200,7 @@ class SimpleRayTracer extends RayTracerBase {
      * @return A new Ray object representing the transparency ray.
      */
     private Ray constructTransparencyRay(Intersection intersection) {
-        Vector delta = intersection.normal.scale(intersection.vNormal < 0 ? -DELTA : DELTA);
-        return new Ray(intersection.point.add(delta), intersection.v);
+        return new Ray(intersection.point, intersection.v,intersection.normal);
     }
 
     /**
