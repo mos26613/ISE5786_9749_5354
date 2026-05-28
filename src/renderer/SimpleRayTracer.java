@@ -66,6 +66,32 @@ class SimpleRayTracer extends RayTracerBase {
     }
 
     /**
+     * Calculates the transparency factor (ktr) for the given intersection point, which represents how much light can pass through the geometries between the light source and the intersection point.
+     *
+     * @param intersection The intersection point for which to calculate the transparency factor.
+     * @return The transparency factor (ktr) for the given intersection point, which is a product of the transparency coefficients (kT) of all geometries that intersect with the shadow ray from the light source to the intersection point.
+     */
+    private Double3 transparency(Intersection intersection) {
+        Vector pointToLight = intersection.l.scale(-1);
+        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
+
+        var shadowIntersections = _scene.geometries.calcIntersections(shadowRay);
+        Double3 ktr = Double3.ONE;
+        if (shadowIntersections == null) return ktr;
+
+        double lightDistance = intersection.light.getDistance(intersection.point);
+        for (var shadowIntersection : shadowIntersections) {
+            if (alignZero(intersection.point.distance(shadowIntersection.point) - lightDistance) < 0 ) {
+                ktr = ktr.product(shadowIntersection.material.kT);
+                if (ktr.isLowerThan(MIN_CALC_COLOR_K)) {
+                    return Double3.ZERO;
+                }
+            }
+        }
+        return ktr;
+    }
+
+    /**
      * Calculates the color at the given intersection point.
      *
      * @param intersection The point of intersection for which to calculate the color.
@@ -75,8 +101,8 @@ class SimpleRayTracer extends RayTracerBase {
     private Color calcColor(Intersection intersection, Vector v) {
         return !preprocessIntersection(intersection, v) ? Color.BLACK
                 : _scene.ambientLight.getIntensity()
-                  .scale(intersection.material.kA)
-                  .add(calcColor(intersection, MAX_CALC_COLOR_LEVEL, INITIAL_K));
+                .scale(intersection.material.kA)
+                .add(calcColor(intersection, MAX_CALC_COLOR_LEVEL, INITIAL_K));
     }
 
     /**
@@ -88,25 +114,26 @@ class SimpleRayTracer extends RayTracerBase {
      * @return The color at the intersection point, which is a combination of local lighting effects and contributions from reflections and refractions.
      */
     private Color calcColor(Intersection intersection, int level, Double3 k) {
-        return calcLocalEffects(intersection)
+        return calcLocalEffects(intersection, k)
                 .add(calcGlobalEffects(intersection, level, k));
     }
 
     /**
-     * Calculates the local lighting effects at the given intersection point.
-     * This method iterates through all light sources in the scene and calculates the contribution of each light source to the color at the intersection point,
-     * taking into account the diffuse and specular components of the lighting.
+     * Calculates the local lighting effects (diffuse and specular) at the given intersection point, taking into account the color contribution (k) for optimization.
      *
-     * @param intersection The point of intersection for which to calculate the local lighting effects.
-     * @return The color contribution from all light sources at the intersection point, which is a combination of diffuse and specular components.
+     * @param intersection The point of intersection for which to calculate the local effects.
+     * @param k            The color contribution factor, which is used to optimize the ray tracing process by ignoring contributions that are too small to affect the final color significantly.
+     * @return The color contribution from local lighting effects at the intersection point, which is a combination of the material's emission and the contributions from diffuse and specular lighting based on the light sources in the scene.
      */
-    private Color calcLocalEffects(Intersection intersection) {
+    private Color calcLocalEffects(Intersection intersection, Double3 k) {
         Color color = intersection.geometry.getEmission();
         for (LightSource lightSource : _scene.lights) {
             if (preprocessLightSource(intersection, lightSource)) {
-                if (unshaded(intersection)) {
+                Double3 ktr = transparency(intersection);
+                if (ktr.product(k).isGreaterThan(MIN_CALC_COLOR_K)) {
                     color = color.add(
                             lightSource.getIntensity(intersection.point)
+                                    .scale(ktr)
                                     .scale(calcDiffuse(intersection)
                                             .add(calcSpecular(intersection))));
                 }
@@ -190,7 +217,7 @@ class SimpleRayTracer extends RayTracerBase {
         Vector tmp = intersection.normal.scale(2 * intersection.vNormal);
         Vector r = intersection.v
                 .subtract(tmp);
-        return new Ray(intersection.point, r,intersection.normal);
+        return new Ray(intersection.point, r, intersection.normal);
     }
 
     /**
@@ -200,7 +227,7 @@ class SimpleRayTracer extends RayTracerBase {
      * @return A new Ray object representing the transparency ray.
      */
     private Ray constructTransparencyRay(Intersection intersection) {
-        return new Ray(intersection.point, intersection.v,intersection.normal);
+        return new Ray(intersection.point, intersection.v, intersection.normal);
     }
 
     /**
@@ -223,7 +250,7 @@ class SimpleRayTracer extends RayTracerBase {
      *
      * @param ray The ray for which to find the closest intersection point with the geometries in the scene.
      * @return The closest Intersection object representing the intersection point of the ray with the geometries in the scene,
-     *  or null if there are no intersections.
+     * or null if there are no intersections.
      */
     private Intersection findClosestIntersection(Ray ray) {
         return ray.findClosestIntersection(_scene.geometries.calcIntersections(ray));
