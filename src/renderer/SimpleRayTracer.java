@@ -190,7 +190,7 @@ class SimpleRayTracer extends RayTracerBase {
         Vector tmp = intersection.normal.scale(2 * intersection.vNormal);
         Vector r = intersection.v
                 .subtract(tmp);
-        return new Ray(intersection.point, r,intersection.normal); // TODO
+        return new Ray(intersection.point, r,intersection.normal);
     }
 
     /**
