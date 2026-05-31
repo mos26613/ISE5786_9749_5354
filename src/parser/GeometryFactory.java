@@ -1,8 +1,11 @@
 package parser;
 
+import geometries.impl.Cylinder;
 import geometries.impl.Plane;
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
+import geometries.impl.Tube;
+import primitives.Ray;
 
 /**
  * Builds {@link geometries.api.Geometry} instances from course-style string
@@ -74,5 +77,38 @@ final class GeometryFactory {
                 AttributeParser.parsePoint(p0Attr),
                 AttributeParser.parsePoint(p1Attr),
                 AttributeParser.parsePoint(p2Attr));
+    }
+
+    /**
+     * Builds a tube from an axis ray (point + direction) and a radius.
+     *
+     * @param axisPointAttr a point on the tube axis as "x y z"
+     * @param axisDirAttr   the tube axis direction as "x y z"
+     * @param radiusAttr    the radius as a single numeric string
+     * @return the built tube
+     */
+    static Tube buildTube(String axisPointAttr, String axisDirAttr, String radiusAttr) {
+        return new Tube(
+                AttributeParser.parseDouble(radiusAttr, "tube radius"),
+                new Ray(AttributeParser.parsePoint(axisPointAttr),
+                        AttributeParser.parseVector(axisDirAttr)));
+    }
+
+    /**
+     * Builds a cylinder from an axis ray (point + direction), a radius, and a height.
+     *
+     * @param axisPointAttr a point on the cylinder axis as "x y z"
+     * @param axisDirAttr   the cylinder axis direction as "x y z"
+     * @param radiusAttr    the radius as a single numeric string
+     * @param heightAttr    the height as a single numeric string
+     * @return the built cylinder
+     */
+    static Cylinder buildCylinder(String axisPointAttr, String axisDirAttr,
+                                  String radiusAttr, String heightAttr) {
+        return new Cylinder(
+                AttributeParser.parseDouble(radiusAttr, "cylinder radius"),
+                new Ray(AttributeParser.parsePoint(axisPointAttr),
+                        AttributeParser.parseVector(axisDirAttr)),
+                AttributeParser.parseDouble(heightAttr, "cylinder height"));
     }
 }

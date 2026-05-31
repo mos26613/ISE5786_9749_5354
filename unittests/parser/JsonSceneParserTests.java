@@ -61,4 +61,26 @@ class JsonSceneParserTests {
         assertNotNull(scene.geometries.findIntersections(down),
                 "Expected at least one intersection along the central ray");
     }
+
+    /**
+     * Tests {@link JsonSceneParser#parse(String)} on a fixture that declares a
+     * tube and a cylinder. Verifies that the scene name round-trips and that the
+     * cylinder (axis-aligned with -Z) is hit by the central camera ray, confirming
+     * both geometries were parsed and added to the composite.
+     *
+     * @throws IOException if the fixture file cannot be read
+     */
+    @Test
+    void testParseTubeAndCylinder() throws IOException {
+        // Arrange + Act
+        Scene scene = new JsonSceneParser().parse("tubeCylinderTest");
+
+        // Assert — scalar field
+        assertEquals("Tube and cylinder", scene.name, "Wrong scene name");
+
+        // Assert — a ray from the origin toward -Z must hit the cylinder's top base.
+        Ray down = new Ray(Point.ZERO, new Vector(0, 0, -1));
+        assertNotNull(scene.geometries.findIntersections(down),
+                "Expected an intersection with the cylinder along the central ray");
+    }
 }

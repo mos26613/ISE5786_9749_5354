@@ -107,6 +107,26 @@ public final class JsonSceneParser implements SceneParser {
      * Plane normal-vector attribute key.
      */
     private static final String KEY_NORMAL = "normal";
+    /**
+     * Tube array key.
+     */
+    private static final String KEY_TUBE = "tube";
+    /**
+     * Cylinder array key.
+     */
+    private static final String KEY_CYLINDER = "cylinder";
+    /**
+     * Axis reference-point attribute key (tube and cylinder).
+     */
+    private static final String KEY_AXIS_POINT = "axis-point";
+    /**
+     * Axis direction-vector attribute key (tube and cylinder).
+     */
+    private static final String KEY_AXIS_DIRECTION = "axis-direction";
+    /**
+     * Cylinder height attribute key.
+     */
+    private static final String KEY_HEIGHT = "height";
 
     /**
      * Default constructor.
@@ -148,6 +168,8 @@ public final class JsonSceneParser implements SceneParser {
         readSpheres(node, composite);
         readTriangles(node, composite);
         readPlanes(node, composite);
+        readTubes(node, composite);
+        readCylinders(node, composite);
         // Adding a new geometry kind → add one more readXxx call here.
         return composite;
     }
@@ -209,6 +231,43 @@ public final class JsonSceneParser implements SceneParser {
                         item.getString(KEY_P1),
                         item.getString(KEY_P2)));
             }
+        }
+    }
+
+    /**
+     * Reads all tube entries from the geometries node.
+     *
+     * @param node      the geometries JSON object
+     * @param composite the target composite collection
+     */
+    private static void readTubes(JSONObject node, Geometries composite) {
+        JSONArray items = node.optJSONArray(KEY_TUBE);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            composite.add(GeometryFactory.buildTube(
+                    item.getString(KEY_AXIS_POINT),
+                    item.getString(KEY_AXIS_DIRECTION),
+                    item.getString(KEY_RADIUS)));
+        }
+    }
+
+    /**
+     * Reads all cylinder entries from the geometries node.
+     *
+     * @param node      the geometries JSON object
+     * @param composite the target composite collection
+     */
+    private static void readCylinders(JSONObject node, Geometries composite) {
+        JSONArray items = node.optJSONArray(KEY_CYLINDER);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            composite.add(GeometryFactory.buildCylinder(
+                    item.getString(KEY_AXIS_POINT),
+                    item.getString(KEY_AXIS_DIRECTION),
+                    item.getString(KEY_RADIUS),
+                    item.getString(KEY_HEIGHT)));
         }
     }
 }
