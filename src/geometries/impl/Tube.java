@@ -7,6 +7,10 @@ import primitives.Ray;
 import primitives.Util;
 import primitives.Vector;
 
+import static java.lang.Math.sqrt;
+import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
+
 /**
  * Represents a tube geometry.
  */
@@ -46,6 +50,44 @@ public class Tube extends RadialGeometry {
 
     @Override
     protected List<Intersection> calcIntersectionsHelper(Ray ray) {
-        return null; // TODO: Implement the intersection logic for the tube
+        Vector va = _axis.direction();
+        Vector v = ray.direction();
+        Point p0 = ray.origin();
+        Point pa = _axis.origin();
+
+        // Coefficient of t^2: squared length of the ray direction's component
+        // perpendicular to the axis. Zero means the ray is parallel to the axis,
+        // so it never crosses the (infinite) surface.
+        double dv = v.dotProduct(va);
+        double a = 1 - dv * dv;
+        if (isZero(a)) return null;
+
+        // Vector from the axis origin to the ray origin, guarding the zero-vector case
+        double dpva, vdp, dpSq;
+        if (p0.equals(pa)) {
+            dpva = vdp = dpSq = 0;
+        } else {
+            Vector dp = p0.subtract(pa);
+            dpva = dp.dotProduct(va);
+            vdp = v.dotProduct(dp);
+            dpSq = dp.lengthSquared();
+        }
+
+        double b = 2 * (vdp - dv * dpva);
+        double c = dpSq - dpva * dpva - _radiusSquared;
+
+        // disc < 0: no intersection; disc == 0: tangent line (excluded)
+        double disc = alignZero(b * b - 4 * a * c);
+        if (disc <= 0) return null;
+
+        double sqrtDisc = sqrt(disc);
+        // a > 0, so t1 < t2 (closer intersection first)
+        double t1 = alignZero((-b - sqrtDisc) / (2 * a));
+        double t2 = alignZero((-b + sqrtDisc) / (2 * a));
+
+        if (t1 <= 0 && t2 <= 0) return null;
+        if (t1 > 0 && t2 > 0) return List.of(new Intersection(this, ray.getPoint(t1)),
+                                             new Intersection(this, ray.getPoint(t2)));
+        return List.of(new Intersection(this, ray.getPoint(t2)));
     }
 }
