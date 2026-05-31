@@ -7,6 +7,8 @@ import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 
+import static primitives.Util.alignZero;
+import static primitives.Util.compareSign;
 import static primitives.Util.isZero;
 
 /**
@@ -89,8 +91,32 @@ public class Polygon extends Geometry {
         return _plane.getNormal(point);
     }
 
-    @Override
     protected List<Intersection> calcIntersectionsHelper(Ray ray) {
-        return null; // TODO: Implement the intersection logic for the polygon
+        List<Point> planeIntersections = _plane.findIntersections(ray);
+        if (planeIntersections == null) {
+            return null;
+        }
+        Point intersection = planeIntersections.getFirst();
+
+        Point P0 = ray.origin();
+        Vector v = ray.direction();
+        int size = _vertices.size();
+
+        // First edge's sign serves as the reference
+        Vector vCurr = _vertices.getFirst().subtract(P0);
+        Vector vNext = _vertices.get(1).subtract(P0);
+        double firstSign = alignZero(v.dotProduct(vCurr.crossProduct(vNext).normalize()));
+
+        // Every subsequent edge must share that sign
+        for (int i = 1; i < size; i++) {
+            vCurr = vNext;
+            vNext = _vertices.get((i + 1) % size).subtract(P0);
+            double sign = alignZero(v.dotProduct(vCurr.crossProduct(vNext).normalize()));
+            if (!compareSign(firstSign, sign)) {
+                return null;
+            }
+        }
+
+        return List.of(new Intersection(this, intersection));
     }
 }
