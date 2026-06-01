@@ -1,0 +1,23 @@
+{
+  "scene": {
+    "name": "Test scene",
+    "ambient-light": { "color": "38 38 38" },
+    "geometries": {
+      "sphere": [
+        { "center": "60 50 -50", "radius": "30", "emission": "0 0 255",
+          "material": { "kD": "0.2", "kS": "0.2", "shininess": "30", "kT": "0.6" } }
+      ],
+      "triangle": [
+        { "p0": "-150 -150 -115", "p1": "150 -150 -135", "p2": "75 75 -150",
+          "material": { "kD": "0.5", "kS": "0.5", "shininess": "60" } },
+        { "p0": "-150 -150 -115", "p1": "-70 70 -140", "p2": "75 75 -150",
+          "material": { "kD": "0.5", "kS": "0.5", "shininess": "60" } }
+      ]
+    },
+    "lights": {
+      "spot": [
+        { "intensity": "700 400 400", "position": "60 50 0", "direction": "0 0 -1", "kL": "4E-5", "kQ": "2E-7" }
+      ]
+    }
+  }
+}

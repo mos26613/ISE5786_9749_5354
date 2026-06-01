@@ -3,12 +3,15 @@ package renderer;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import lighting.AmbientLight;
 import lighting.SpotLight;
+import parser.JsonSceneParser;
 import primitives.*;
 import scene.Scene;
 
@@ -112,5 +115,49 @@ class TransparencyReflectionTests {
          .build() //
          .renderImage() //
          .writeToImage("refractionShadow");
+   }
+
+   /**
+    * Renders a scene loaded from a JSON file (SceneLoader bonus) and writes it to
+    * an image, using each scene's own camera parameters.
+    * @param jsonName   the JSON scene file base name (no extension)
+    * @param location   the camera location
+    * @param vpDistance the view-plane distance
+    * @param vpSize     the view-plane size (square)
+    * @param resolution the image resolution (square)
+    * @param imageName  the output image file name
+    * @throws IOException if the JSON scene file cannot be read
+    */
+   private static void renderFromJson(String jsonName, Point location, double vpDistance,
+                                      double vpSize, int resolution, String imageName) throws IOException {
+      Scene scene = new JsonSceneParser().parse(jsonName);
+      Camera.getBuilder() //
+         .setRayTracer(scene, RayTracerType.SIMPLE) //
+         .setLocation(location) //
+         .setDirection(Point.ZERO, Vector.AXIS_Y) //
+         .setVpDistance(vpDistance).setVpSize(vpSize, vpSize) //
+         .setResolution(resolution, resolution) //
+         .build() //
+         .renderImage() //
+         .writeToImage(imageName);
+   }
+
+   /** Produce the two-spheres refraction picture from a JSON scene file */
+   @Test
+   void testTwoSpheresJson() throws IOException {
+      renderFromJson("refractionTwoSpheres", new Point(0, 0, 1000), 1000, 150, 500, "refractionTwoSpheres json");
+   }
+
+   /** Produce the two-spheres-on-mirrors reflection picture from a JSON scene file */
+   @Test
+   void testTwoSpheresOnMirrorsJson() throws IOException {
+      renderFromJson("reflectionTwoSpheresMirrored", new Point(0, 0, 10000), 10000, 2500, 500,
+                     "reflectionTwoSpheresMirrored json");
+   }
+
+   /** Produce the transparent-sphere partial-shadow picture from a JSON scene file */
+   @Test
+   void testTrianglesTransparentSphereJson() throws IOException {
+      renderFromJson("refractionShadow", new Point(0, 0, 1000), 1000, 200, 600, "refractionShadow json");
    }
 }

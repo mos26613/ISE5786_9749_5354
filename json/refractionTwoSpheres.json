@@ -1,0 +1,18 @@
+{
+  "scene": {
+    "name": "Test scene",
+    "geometries": {
+      "sphere": [
+        { "center": "0 0 -50", "radius": "50", "emission": "0 0 255",
+          "material": { "kD": "0.4", "kS": "0.3", "shininess": "100", "kT": "0.3" } },
+        { "center": "0 0 -50", "radius": "25", "emission": "255 0 0",
+          "material": { "kD": "0.5", "kS": "0.5", "shininess": "100" } }
+      ]
+    },
+    "lights": {
+      "spot": [
+        { "intensity": "1000 600 0", "position": "-100 -100 500", "direction": "-1 -1 -2", "kL": "0.0004", "kQ": "0.0000006" }
+      ]
+    }
+  }
+}

@@ -156,6 +156,14 @@ public final class JsonSceneParser implements SceneParser {
      */
     private static final String KEY_SHININESS = "shininess";
     /**
+     * Material transparency attenuation coefficient (kT) attribute key.
+     */
+    private static final String KEY_KT = "kT";
+    /**
+     * Material reflection attenuation coefficient (kR) attribute key.
+     */
+    private static final String KEY_KR = "kR";
+    /**
      * Lights object key.
      */
     private static final String KEY_LIGHTS = "lights";
@@ -359,7 +367,9 @@ public final class JsonSceneParser implements SceneParser {
                     material.optString(KEY_KA, null),
                     material.optString(KEY_KD, null),
                     material.optString(KEY_KS, null),
-                    material.optString(KEY_SHININESS, null)));
+                    material.optString(KEY_SHININESS, null),
+                    material.optString(KEY_KT, null),
+                    material.optString(KEY_KR, null)));
         }
         return geometry;
     }

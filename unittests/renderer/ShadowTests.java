@@ -3,6 +3,8 @@ package renderer;
 import static java.awt.Color.BLUE;
 import static java.awt.Color.RED;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import geometries.api.Intersectable;
@@ -10,6 +12,7 @@ import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import lighting.AmbientLight;
 import lighting.SpotLight;
+import parser.JsonSceneParser;
 import primitives.Color;
 import primitives.Material;
 import primitives.Point;
@@ -149,6 +152,39 @@ class ShadowTests {
                  .setMaterial(new Material().setKD(0.5).setKS(0.4).setShininess(111)) //
          );
       _scene.setAmbientLight(new AmbientLight(new Color(38, 38, 38)));
+   }
+
+   /**
+    * Renders a scene loaded from a JSON file (SceneLoader bonus) with the tests'
+    * standard camera, and writes it to an image.
+    * @param jsonName  the JSON scene file base name (no extension)
+    * @param imageName the output image file name
+    * @throws IOException if the JSON scene file cannot be read
+    */
+   private static void renderFromJson(String jsonName, String imageName) throws IOException {
+      Scene scene = new JsonSceneParser().parse(jsonName);
+      Camera.getBuilder() //
+         .setLocation(new Point(0, 0, 1000)) //
+         .setVpDistance(1000) //
+         .setVpSize(200, 200) //
+         .setDirection(Point.ZERO, Vector.AXIS_Y) //
+         .setResolution(600, 600) //
+         .setRayTracer(scene, RayTracerType.SIMPLE) //
+         .build() //
+         .renderImage() //
+         .writeToImage(imageName);
+   }
+
+   /** Produce the initial sphere-triangle shading picture from a JSON scene file */
+   @Test
+   void testSphereTriangleInitialJson() throws IOException {
+      renderFromJson("shadowSphereTriangleInitial", "shadowSphereTriangleInitial json");
+   }
+
+   /** Produce the two-triangles-with-sphere shading picture from a JSON scene file */
+   @Test
+   void testTrianglesSphereJson() throws IOException {
+      renderFromJson("shadowTrianglesSphere", "shadowTrianglesSphere json");
    }
 
 }

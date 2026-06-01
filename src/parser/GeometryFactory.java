@@ -115,17 +115,20 @@ final class GeometryFactory {
 
     /**
      * Builds a material from its optional attributes. Each attribute that is
-     * {@code null} leaves the corresponding material default unchanged. The kA, kD
-     * and kS attributes may each be a single number (uniform) or three numbers
-     * (per-channel).
+     * {@code null} leaves the corresponding material default unchanged. The kA, kD,
+     * kS, kT and kR attributes may each be a single number (uniform) or three
+     * numbers (per-channel).
      *
      * @param kaAttr        the ambient coefficient, or {@code null}
      * @param kdAttr        the diffuse coefficient, or {@code null}
      * @param ksAttr        the specular coefficient, or {@code null}
      * @param shininessAttr the shininess exponent as a numeric string, or {@code null}
+     * @param ktAttr        the transparency coefficient, or {@code null}
+     * @param krAttr        the reflection coefficient, or {@code null}
      * @return the built material with the supplied attributes applied
      */
-    static Material buildMaterial(String kaAttr, String kdAttr, String ksAttr, String shininessAttr) {
+    static Material buildMaterial(String kaAttr, String kdAttr, String ksAttr, String shininessAttr,
+                                  String ktAttr, String krAttr) {
         Material material = new Material();
         if (kaAttr != null) material.setKA(AttributeParser.parseCoefficient(kaAttr));
         if (kdAttr != null) material.setKD(AttributeParser.parseCoefficient(kdAttr));
@@ -133,6 +136,8 @@ final class GeometryFactory {
         if (shininessAttr != null) {
             material.setShininess((int) AttributeParser.parseDouble(shininessAttr, "shininess"));
         }
+        if (ktAttr != null) material.setKT(AttributeParser.parseCoefficient(ktAttr));
+        if (krAttr != null) material.setKR(AttributeParser.parseCoefficient(krAttr));
         return material;
     }
 }
