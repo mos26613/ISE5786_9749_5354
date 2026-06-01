@@ -9,16 +9,10 @@ import primitives.Material;
 import primitives.Ray;
 
 /**
- * Builds {@link geometries.api.Geometry} instances from course-style string
- * attributes produced by {@link AttributeParser}.
- * <p>
- * This class is the single point at which scene parsers couple to geometry
- * constructors. Adding a new geometry kind (for example a cylinder) or a new
- * constructor variant is a localized change here, without touching any
- * format-specific parser.
- * <p>
- * Later stages that attach materials or emission colors to geometries will
- * extend this factory with overloads that accept those additional attributes.
+ * Factory for building geometry objects from their attributes. Each method
+ * corresponds to a geometry type and takes the relevant attributes as strings.
+ * The factory is responsible for parsing the attributes and constructing the
+ * geometry with the appropriate parameters.
  */
 final class GeometryFactory {
     /** Private constructor to prevent instantiation of this utility class. */
