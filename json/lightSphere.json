@@ -1,0 +1,23 @@
+{
+  "scene": {
+    "name": "Sphere scene",
+    "ambient-light": { "color": "0 0 0" },
+    "geometries": {
+      "sphere": [
+        { "center": "0 0 -50", "radius": "50", "emission": "0 0 63.75",
+          "material": { "kD": "0.5", "kS": "0.5", "shininess": "301" } }
+      ]
+    },
+    "lights": {
+      "directional": [
+        { "intensity": "250 0 0", "direction": "1 0 -1" }
+      ],
+      "point": [
+        { "intensity": "0 600 600", "position": "55 -45 40", "kL": "0.001", "kQ": "0.0005" }
+      ],
+      "spot": [
+        { "intensity": "600 500 0", "position": "-10 55 40", "direction": "0.2 -1 -0.8", "kL": "0.001", "kQ": "0.0003" }
+      ]
+    }
+  }
+}

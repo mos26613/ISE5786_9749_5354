@@ -1,0 +1,25 @@
+{
+  "scene": {
+    "name": "Triangle scene",
+    "ambient-light": { "color": "15 15 15" },
+    "geometries": {
+      "triangle": [
+        { "p0": "-110 -110 -150", "p1": "95 100 -150", "p2": "110 -110 -150",
+          "material": { "kD": "0.6 0.6 0.6", "kS": "0.8 0.8 0.8", "shininess": "301" } },
+        { "p0": "-110 -110 -150", "p1": "95 100 -150", "p2": "-75 78 100",
+          "material": { "kD": "0.6 0.6 0.6", "kS": "0.8 0.8 0.8", "shininess": "301" } }
+      ]
+    },
+    "lights": {
+      "directional": [
+        { "intensity": "250 0 0", "direction": "-1 -1 -1" }
+      ],
+      "point": [
+        { "intensity": "0 600 600", "position": "40 -40 80", "kL": "0.0005", "kQ": "0.0001" }
+      ],
+      "spot": [
+        { "intensity": "600 500 0", "position": "-40 40 80", "direction": "1 -1 -2", "kL": "0.0005", "kQ": "0.0001" }
+      ]
+    }
+  }
+}

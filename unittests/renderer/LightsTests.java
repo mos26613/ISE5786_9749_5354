@@ -2,6 +2,8 @@ package renderer;
 
 import static java.awt.Color.BLUE;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import geometries.api.Geometry;
@@ -11,6 +13,7 @@ import lighting.AmbientLight;
 import lighting.DirectionalLight;
 import lighting.PointLight;
 import lighting.SpotLight;
+import parser.JsonSceneParser;
 import primitives.*;
 import scene.Scene;
 
@@ -215,5 +218,63 @@ class LightsTests {
 //         .renderImage() //
 //         .writeToImage("lightTrianglesSpotSharp");
 //   }
+
+   /**
+    * Renders a scene loaded from a JSON file (SceneLoader bonus) with the tests'
+    * standard camera, and writes it to an image.
+    *
+    * @param jsonName  the JSON scene file base name (no extension)
+    * @param vpSize    the view-plane size (150 for sphere scenes, 200 for triangle scenes)
+    * @param imageName the output image file name
+    * @throws IOException if the JSON scene file cannot be read
+    */
+   private static void renderFromJson(String jsonName, double vpSize, String imageName) throws IOException {
+      Scene scene = new JsonSceneParser().parse(jsonName);
+      Camera.getBuilder() //
+         .setRayTracer(scene, RayTracerType.SIMPLE) //
+         .setLocation(new Point(0, 0, 1000)) //
+         .setDirection(Point.ZERO, Vector.AXIS_Y) //
+         .setVpSize(vpSize, vpSize).setVpDistance(1000) //
+         .setResolution(RESOLUTION, RESOLUTION) //
+         .build() //
+         .renderImage() //
+         .writeToImage(imageName);
+   }
+
+   /** Produce the directional-light sphere picture from a JSON scene file */
+   @Test
+   void testSphereDirectionalJson() throws IOException {
+      renderFromJson("lightSphereDirectional", 150, "lightSphereDirectional json");
+   }
+
+   /** Produce the point-light sphere picture from a JSON scene file */
+   @Test
+   void testSpherePointJson() throws IOException {
+      renderFromJson("lightSpherePoint", 150, "lightSpherePoint json");
+   }
+
+   /** Produce the spotlight sphere picture from a JSON scene file */
+   @Test
+   void testSphereSpotJson() throws IOException {
+      renderFromJson("lightSphereSpot", 150, "lightSphereSpot json");
+   }
+
+   /** Produce the directional-light triangles picture from a JSON scene file */
+   @Test
+   void testTrianglesDirectionalJson() throws IOException {
+      renderFromJson("lightTrianglesDirectional", 200, "lightTrianglesDirectional json");
+   }
+
+   /** Produce the point-light triangles picture from a JSON scene file */
+   @Test
+   void testTrianglesPointJson() throws IOException {
+      renderFromJson("lightTrianglesPoint", 200, "lightTrianglesPoint json");
+   }
+
+   /** Produce the spotlight triangles picture from a JSON scene file */
+   @Test
+   void testTrianglesSpotJson() throws IOException {
+      renderFromJson("lightTrianglesSpot", 200, "lightTrianglesSpot json");
+   }
 
 }

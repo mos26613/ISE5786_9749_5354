@@ -114,13 +114,25 @@ final class GeometryFactory {
     }
 
     /**
-     * Builds a material carrying the given ambient attenuation coefficient (kA).
-     * The kA attribute may be a single number (uniform) or three numbers (per-channel).
+     * Builds a material from its optional attributes. Each attribute that is
+     * {@code null} leaves the corresponding material default unchanged. The kA, kD
+     * and kS attributes may each be a single number (uniform) or three numbers
+     * (per-channel).
      *
-     * @param kaAttr the ambient coefficient as one or three numeric components
-     * @return the built material with its ambient coefficient set
+     * @param kaAttr        the ambient coefficient, or {@code null}
+     * @param kdAttr        the diffuse coefficient, or {@code null}
+     * @param ksAttr        the specular coefficient, or {@code null}
+     * @param shininessAttr the shininess exponent as a numeric string, or {@code null}
+     * @return the built material with the supplied attributes applied
      */
-    static Material buildMaterial(String kaAttr) {
-        return new Material().setKA(AttributeParser.parseCoefficient(kaAttr));
+    static Material buildMaterial(String kaAttr, String kdAttr, String ksAttr, String shininessAttr) {
+        Material material = new Material();
+        if (kaAttr != null) material.setKA(AttributeParser.parseCoefficient(kaAttr));
+        if (kdAttr != null) material.setKD(AttributeParser.parseCoefficient(kdAttr));
+        if (ksAttr != null) material.setKS(AttributeParser.parseCoefficient(ksAttr));
+        if (shininessAttr != null) {
+            material.setShininess((int) AttributeParser.parseDouble(shininessAttr, "shininess"));
+        }
+        return material;
     }
 }

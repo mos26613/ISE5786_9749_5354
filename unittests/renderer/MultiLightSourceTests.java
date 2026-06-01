@@ -1,5 +1,7 @@
 package renderer;
 
+import java.io.IOException;
+
 import geometries.api.Geometry;
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
@@ -8,6 +10,7 @@ import lighting.DirectionalLight;
 import lighting.PointLight;
 import lighting.SpotLight;
 import org.junit.jupiter.api.Test;
+import parser.JsonSceneParser;
 import primitives.Color;
 import primitives.Double3;
 import primitives.Material;
@@ -250,5 +253,47 @@ public class MultiLightSourceTests {
                 .build()
                 .renderImage()
                 .writeToImage("lightTriangles");
+    }
+
+    /**
+     * Renders a scene loaded from a JSON file (SceneLoader bonus) with the tests'
+     * standard camera, and writes it to an image.
+     *
+     * @param jsonName  the JSON scene file base name (no extension)
+     * @param vpSize    the view-plane size (150 for the sphere scene, 200 for the triangle scene)
+     * @param imageName the output image file name
+     * @throws IOException if the JSON scene file cannot be read
+     */
+    private static void renderFromJson(String jsonName, double vpSize, String imageName) throws IOException {
+        Scene scene = new JsonSceneParser().parse(jsonName);
+        Camera.getBuilder()
+                .setRayTracer(scene, RayTracerType.SIMPLE)
+                .setLocation(new Point(0, 0, 1000))
+                .setDirection(Point.ZERO, Vector.AXIS_Y)
+                .setVpSize(vpSize, vpSize).setVpDistance(1000)
+                .setResolution(RESOLUTION, RESOLUTION)
+                .build()
+                .renderImage()
+                .writeToImage(imageName);
+    }
+
+    /**
+     * Produces the multi-light sphere picture from a JSON scene file.
+     *
+     * @throws IOException if the JSON scene file cannot be read
+     */
+    @Test
+    void testSphereJson() throws IOException {
+        renderFromJson("lightSphere", 150, "lightSphere json");
+    }
+
+    /**
+     * Produces the multi-light triangles picture from a JSON scene file.
+     *
+     * @throws IOException if the JSON scene file cannot be read
+     */
+    @Test
+    void testTrianglesJson() throws IOException {
+        renderFromJson("lightTriangles", 200, "lightTriangles json");
     }
 }

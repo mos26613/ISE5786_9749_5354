@@ -3,6 +3,8 @@ package parser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +12,7 @@ import org.json.JSONObject;
 import geometries.api.Geometry;
 import geometries.impl.Geometries;
 import lighting.AmbientLight;
+import lighting.LightSource;
 import scene.Scene;
 
 /**
@@ -140,6 +143,58 @@ public final class JsonSceneParser implements SceneParser {
      * Material ambient attenuation coefficient (kA) attribute key.
      */
     private static final String KEY_KA = "kA";
+    /**
+     * Material diffuse attenuation coefficient (kD) attribute key.
+     */
+    private static final String KEY_KD = "kD";
+    /**
+     * Material specular attenuation coefficient (kS) attribute key.
+     */
+    private static final String KEY_KS = "kS";
+    /**
+     * Material shininess exponent attribute key.
+     */
+    private static final String KEY_SHININESS = "shininess";
+    /**
+     * Lights object key.
+     */
+    private static final String KEY_LIGHTS = "lights";
+    /**
+     * Directional-light array key.
+     */
+    private static final String KEY_DIRECTIONAL = "directional";
+    /**
+     * Point-light array key.
+     */
+    private static final String KEY_POINT_LIGHT = "point";
+    /**
+     * Spot-light array key.
+     */
+    private static final String KEY_SPOT = "spot";
+    /**
+     * Light intensity-color attribute key.
+     */
+    private static final String KEY_INTENSITY = "intensity";
+    /**
+     * Light direction-vector attribute key (directional and spot).
+     */
+    private static final String KEY_DIRECTION = "direction";
+    /**
+     * Light position attribute key (point and spot).
+     */
+    private static final String KEY_POSITION = "position";
+    /**
+     * Light constant-attenuation factor (kC) attribute key.
+     */
+    private static final String KEY_KC = "kC";
+    /**
+     * Light linear-attenuation factor (kL) attribute key.
+     */
+    private static final String KEY_KL = "kL";
+    /**
+     * Light quadratic-attenuation factor (kQ) attribute key.
+     */
+    private static final String KEY_KQ = "kQ";
 
     /**
      * Default constructor.
@@ -163,8 +218,9 @@ public final class JsonSceneParser implements SceneParser {
         if (root.has(KEY_GEOMETRIES)) {
             scene.setGeometries(readGeometries(root.getJSONObject(KEY_GEOMETRIES)));
         }
-        // Future sections (lights, etc.) can be added here without touching
-        // the existing branches above.
+        if (root.has(KEY_LIGHTS)) {
+            scene.lights.addAll(readLights(root.getJSONObject(KEY_LIGHTS)));
+        }
 
         return scene;
     }
@@ -286,8 +342,8 @@ public final class JsonSceneParser implements SceneParser {
 
     /**
      * Applies the optional appearance attributes ({@code emission} color and
-     * {@code material} with its ambient coefficient) of a geometry JSON item to the
-     * given geometry. Attributes that are absent leave the geometry's defaults.
+     * {@code material} with its coefficients) of a geometry JSON item to the given
+     * geometry. Attributes that are absent leave the geometry's defaults.
      *
      * @param item     the geometry JSON object, possibly carrying appearance keys
      * @param geometry the freshly built geometry to decorate
@@ -298,9 +354,86 @@ public final class JsonSceneParser implements SceneParser {
             geometry.setEmission(AttributeParser.parseColor(item.getString(KEY_EMISSION)));
         }
         if (item.has(KEY_MATERIAL)) {
+            JSONObject material = item.getJSONObject(KEY_MATERIAL);
             geometry.setMaterial(GeometryFactory.buildMaterial(
-                    item.getJSONObject(KEY_MATERIAL).getString(KEY_KA)));
+                    material.optString(KEY_KA, null),
+                    material.optString(KEY_KD, null),
+                    material.optString(KEY_KS, null),
+                    material.optString(KEY_SHININESS, null)));
         }
         return geometry;
+    }
+
+    /**
+     * Reads all light arrays from the {@code lights} object.
+     *
+     * @param node the JSON object under the {@code lights} key
+     * @return the list of parsed light sources
+     */
+    private static List<LightSource> readLights(JSONObject node) {
+        List<LightSource> lights = new ArrayList<>();
+        readDirectionalLights(node, lights);
+        readPointLights(node, lights);
+        readSpotLights(node, lights);
+        // Adding a new light kind → add one more readXxxLights call here.
+        return lights;
+    }
+
+    /**
+     * Reads all directional-light entries from the lights node.
+     *
+     * @param node   the lights JSON object
+     * @param lights the target light list
+     */
+    private static void readDirectionalLights(JSONObject node, List<LightSource> lights) {
+        JSONArray items = node.optJSONArray(KEY_DIRECTIONAL);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            lights.add(LightFactory.buildDirectional(
+                    item.getString(KEY_INTENSITY),
+                    item.getString(KEY_DIRECTION)));
+        }
+    }
+
+    /**
+     * Reads all point-light entries from the lights node.
+     *
+     * @param node   the lights JSON object
+     * @param lights the target light list
+     */
+    private static void readPointLights(JSONObject node, List<LightSource> lights) {
+        JSONArray items = node.optJSONArray(KEY_POINT_LIGHT);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            lights.add(LightFactory.buildPoint(
+                    item.getString(KEY_INTENSITY),
+                    item.getString(KEY_POSITION),
+                    item.optString(KEY_KC, null),
+                    item.optString(KEY_KL, null),
+                    item.optString(KEY_KQ, null)));
+        }
+    }
+
+    /**
+     * Reads all spot-light entries from the lights node.
+     *
+     * @param node   the lights JSON object
+     * @param lights the target light list
+     */
+    private static void readSpotLights(JSONObject node, List<LightSource> lights) {
+        JSONArray items = node.optJSONArray(KEY_SPOT);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            lights.add(LightFactory.buildSpot(
+                    item.getString(KEY_INTENSITY),
+                    item.getString(KEY_POSITION),
+                    item.getString(KEY_DIRECTION),
+                    item.optString(KEY_KC, null),
+                    item.optString(KEY_KL, null),
+                    item.optString(KEY_KQ, null)));
+        }
     }
 }
