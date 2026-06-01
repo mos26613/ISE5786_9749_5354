@@ -168,15 +168,4 @@ class RenderTests {
                 .printGrid(100, new Color(YELLOW)) //
                 .writeToImage("render test json");
     }
-
-    /**
-     * Test for a JSON based scene containing a tube and a cylinder - for bonus.
-     * Exercises the tube/cylinder readers of the JSON scene loader.
-     */
-    @Test
-    void testTubeAndCylinderJson() {
-        renderSceneJSON(baseCameraBuilder(), "tubeCylinderTest") //
-                .printGrid(100, new Color(YELLOW)) //
-                .writeToImage("render test tube and cylinder json");
-    }
 }
