@@ -5,6 +5,7 @@ import geometries.impl.Plane;
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import geometries.impl.Tube;
+import primitives.Material;
 import primitives.Ray;
 
 /**
@@ -110,5 +111,16 @@ final class GeometryFactory {
                 new Ray(AttributeParser.parsePoint(axisPointAttr),
                         AttributeParser.parseVector(axisDirAttr)),
                 AttributeParser.parseDouble(heightAttr, "cylinder height"));
+    }
+
+    /**
+     * Builds a material carrying the given ambient attenuation coefficient (kA).
+     * The kA attribute may be a single number (uniform) or three numbers (per-channel).
+     *
+     * @param kaAttr the ambient coefficient as one or three numeric components
+     * @return the built material with its ambient coefficient set
+     */
+    static Material buildMaterial(String kaAttr) {
+        return new Material().setKA(AttributeParser.parseCoefficient(kaAttr));
     }
 }

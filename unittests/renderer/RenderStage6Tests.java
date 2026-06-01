@@ -5,11 +5,14 @@ import static java.awt.Color.GREEN;
 import static java.awt.Color.RED;
 import static java.awt.Color.WHITE;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import lighting.AmbientLight;
+import parser.JsonSceneParser;
 import primitives.Color;
 import primitives.Double3;
 import primitives.Material;
@@ -134,5 +137,27 @@ class RenderStage6Tests {
       _triangleRightBottom.setMaterial(new Material().setKA(new Double3(0, 0, 0.8)));
 
       createImage(scene, "ambient render test");
+   }
+
+   /**
+    * Produce the emission scene by loading it from a JSON file (SceneLoader bonus)
+    * and render it into a png image with a grid.
+    *
+    * @throws IOException if the JSON scene file cannot be read
+    */
+   @Test
+   void testRenderEmissionColorJson() throws IOException {
+      createImage(new JsonSceneParser().parse("stage6EmissionTest"), "emission render test json");
+   }
+
+   /**
+    * Produce the ambient-attenuation scene by loading it from a JSON file (SceneLoader bonus)
+    * and render it into a png image with a grid.
+    *
+    * @throws IOException if the JSON scene file cannot be read
+    */
+   @Test
+   void testRenderAmbientColorJson() throws IOException {
+      createImage(new JsonSceneParser().parse("stage6AmbientTest"), "ambient render test json");
    }
 }

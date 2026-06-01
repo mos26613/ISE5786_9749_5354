@@ -1,6 +1,7 @@
 package parser;
 
 import primitives.Color;
+import primitives.Double3;
 import primitives.Point;
 import primitives.Vector;
 
@@ -104,6 +105,53 @@ final class AttributeParser {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                     "Invalid number in " + description + " attribute: " + attribute, e);
+        }
+    }
+
+    /**
+     * Parses an attenuation coefficient that may be uniform or per-channel.
+     * <p>
+     * A single number yields a uniform coefficient ({@code new Double3(d)}); three
+     * whitespace-separated numbers yield a per-channel coefficient
+     * ({@code new Double3(x, y, z)}).
+     *
+     * @param attribute the coefficient attribute, holding one or three numbers
+     * @return the parsed coefficient
+     * @throws IllegalArgumentException if the attribute is null, malformed, or does not
+     *                                  contain exactly one or three numbers
+     */
+    static Double3 parseCoefficient(String attribute) {
+        if (attribute == null) {
+            throw new IllegalArgumentException("Missing coefficient attribute");
+        }
+        String[] parts = attribute.trim().split("\\s+");
+        if (parts.length == 1) {
+            return new Double3(parseComponent(parts[0], attribute));
+        }
+        if (parts.length == TRIPLE_COMPONENTS) {
+            return new Double3(
+                    parseComponent(parts[0], attribute),
+                    parseComponent(parts[1], attribute),
+                    parseComponent(parts[2], attribute));
+        }
+        throw new IllegalArgumentException(
+                "Expected 1 or 3 components for coefficient, got " + parts.length + ": " + attribute);
+    }
+
+    /**
+     * Parses one numeric component, attributing parse failures to the full attribute value.
+     *
+     * @param part      the single number to parse
+     * @param attribute the full attribute value (used in error messages)
+     * @return the parsed number
+     * @throws IllegalArgumentException if the component is not a valid number
+     */
+    private static double parseComponent(String part, String attribute) {
+        try {
+            return Double.parseDouble(part);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Invalid number in coefficient attribute: " + attribute, e);
         }
     }
 }

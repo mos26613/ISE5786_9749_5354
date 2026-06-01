@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import geometries.api.Geometry;
 import geometries.impl.Geometries;
 import lighting.AmbientLight;
 import scene.Scene;
@@ -127,6 +128,18 @@ public final class JsonSceneParser implements SceneParser {
      * Cylinder height attribute key.
      */
     private static final String KEY_HEIGHT = "height";
+    /**
+     * Optional per-geometry emission-color attribute key.
+     */
+    private static final String KEY_EMISSION = "emission";
+    /**
+     * Optional per-geometry material object key.
+     */
+    private static final String KEY_MATERIAL = "material";
+    /**
+     * Material ambient attenuation coefficient (kA) attribute key.
+     */
+    private static final String KEY_KA = "kA";
 
     /**
      * Default constructor.
@@ -185,9 +198,9 @@ public final class JsonSceneParser implements SceneParser {
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            composite.add(GeometryFactory.buildSphere(
+            composite.add(applyAppearance(item, GeometryFactory.buildSphere(
                     item.getString(KEY_CENTER),
-                    item.getString(KEY_RADIUS)));
+                    item.getString(KEY_RADIUS))));
         }
     }
 
@@ -202,10 +215,10 @@ public final class JsonSceneParser implements SceneParser {
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            composite.add(GeometryFactory.buildTriangle(
+            composite.add(applyAppearance(item, GeometryFactory.buildTriangle(
                     item.getString(KEY_P0),
                     item.getString(KEY_P1),
-                    item.getString(KEY_P2)));
+                    item.getString(KEY_P2))));
         }
     }
 
@@ -222,14 +235,14 @@ public final class JsonSceneParser implements SceneParser {
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
             if (item.has(KEY_NORMAL)) {
-                composite.add(GeometryFactory.buildPlaneByPointNormal(
+                composite.add(applyAppearance(item, GeometryFactory.buildPlaneByPointNormal(
                         item.getString(KEY_POINT),
-                        item.getString(KEY_NORMAL)));
+                        item.getString(KEY_NORMAL))));
             } else {
-                composite.add(GeometryFactory.buildPlaneByThreePoints(
+                composite.add(applyAppearance(item, GeometryFactory.buildPlaneByThreePoints(
                         item.getString(KEY_P0),
                         item.getString(KEY_P1),
-                        item.getString(KEY_P2)));
+                        item.getString(KEY_P2))));
             }
         }
     }
@@ -245,10 +258,10 @@ public final class JsonSceneParser implements SceneParser {
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            composite.add(GeometryFactory.buildTube(
+            composite.add(applyAppearance(item, GeometryFactory.buildTube(
                     item.getString(KEY_AXIS_POINT),
                     item.getString(KEY_AXIS_DIRECTION),
-                    item.getString(KEY_RADIUS)));
+                    item.getString(KEY_RADIUS))));
         }
     }
 
@@ -263,11 +276,31 @@ public final class JsonSceneParser implements SceneParser {
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
             JSONObject item = items.getJSONObject(i);
-            composite.add(GeometryFactory.buildCylinder(
+            composite.add(applyAppearance(item, GeometryFactory.buildCylinder(
                     item.getString(KEY_AXIS_POINT),
                     item.getString(KEY_AXIS_DIRECTION),
                     item.getString(KEY_RADIUS),
-                    item.getString(KEY_HEIGHT)));
+                    item.getString(KEY_HEIGHT))));
         }
+    }
+
+    /**
+     * Applies the optional appearance attributes ({@code emission} color and
+     * {@code material} with its ambient coefficient) of a geometry JSON item to the
+     * given geometry. Attributes that are absent leave the geometry's defaults.
+     *
+     * @param item     the geometry JSON object, possibly carrying appearance keys
+     * @param geometry the freshly built geometry to decorate
+     * @return the same geometry, decorated, for fluent use inside {@code composite.add(...)}
+     */
+    private static Geometry applyAppearance(JSONObject item, Geometry geometry) {
+        if (item.has(KEY_EMISSION)) {
+            geometry.setEmission(AttributeParser.parseColor(item.getString(KEY_EMISSION)));
+        }
+        if (item.has(KEY_MATERIAL)) {
+            geometry.setMaterial(GeometryFactory.buildMaterial(
+                    item.getJSONObject(KEY_MATERIAL).getString(KEY_KA)));
+        }
+        return geometry;
     }
 }
