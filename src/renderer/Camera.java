@@ -1,6 +1,8 @@
 package renderer;
 
+import java.util.LinkedList;
 import java.util.MissingResourceException;
+import java.util.stream.IntStream;
 
 import primitives.Color;
 import primitives.Point;
@@ -75,6 +77,27 @@ public class Camera implements Cloneable {
     private RayTracerBase _rayTracer;
 
     /**
+     * The number of threads used for rendering the image.
+     */
+    private int threadsCount = 0;
+
+    /**
+     * The number of threads that are not used for rendering the image.
+     */
+    private static final int SPARE_THREADS = 2;
+
+    /**
+     * Debug print interval in seconds for progress percentage
+     * If it is zero - there is no progress output
+     */
+    private double printInterval = 0.0;
+
+    /**
+     * The PixelManager responsible for managing pixel rendering in a multi-threaded environment, if applicable.
+     */
+    private PixelManager pixelManager;
+
+    /**
      * Private constructor to prevent direct instantiation. Use the Builder to create instances of Camera.
      */
     private Camera() {
@@ -90,14 +113,62 @@ public class Camera implements Cloneable {
     }
 
     /**
-     * Renders the image by casting rays through each pixel on the view plane and writing the resulting colors to the image.
+     * This function renders image's pixel color map from the scene
+     * included in the ray tracer object
      *
-     * @return The Camera instance after rendering the image, allowing for method chaining if desired.
+     * @return the camera object itself
      */
     public Camera renderImage() {
+        pixelManager = new PixelManager(_nY, _nX, printInterval);
+        return switch (threadsCount) {
+            case 0 -> renderImageNoThreads();
+            case -1 -> renderImageStream();
+            default -> renderImageRawThreads();
+        };
+    }
+
+    /**
+     * Render image using multi-threading by parallel streaming
+     *
+     * @return the camera object itself
+     */
+    private Camera renderImageStream() {
+        IntStream.range(0, _nY).parallel()
+                .forEach(i -> IntStream.range(0, _nX).parallel()
+                        .forEach(j -> castRay(j, i)));
+        return this;
+    }
+
+    /**
+     * Render image without multi-threading.
+     *
+     * @return the camera object itself
+     */
+    public Camera renderImageNoThreads() {
         for (int i = 0; i < _nY; i++)
             for (int j = 0; j < _nX; j++)
                 castRay(j, i);
+        return this;
+    }
+
+    /**
+     * Render image using multi-threading by creating and running raw threads
+     *
+     * @return the camera object itself
+     */
+    private Camera renderImageRawThreads() {
+        var threads = new LinkedList<Thread>();
+        while (threadsCount-- > 0)
+            threads.add(new Thread(() -> {
+                PixelManager.Pixel pixel;
+                while ((pixel = pixelManager.nextPixel()) != null)
+                    castRay(pixel.col(), pixel.row());
+            }));
+        for (var thread : threads) thread.start();
+        try {
+            for (var thread : threads) thread.join();
+        } catch (InterruptedException ignored) {
+        }
         return this;
     }
 
@@ -112,12 +183,13 @@ public class Camera implements Cloneable {
         Ray ray = constructRay(xIndex, yIndex);
         Color color = _rayTracer.traceRay(ray);
         _imageWriter.writePixel(xIndex, yIndex, color);
+        pixelManager.pixelDone();
     }
 
     /**
      * Draws a grid on the rendered image by coloring pixels at regular intervals with the specified color.
-     * The grid lines are drawn at every 'interval' pixels along both the horizontal and vertical directions,
-     * as well as along the borders of the image.
+     * The grid lines are drawn at every 'interval' pixel along both the horizontal and vertical directions,
+     * and along the borders of the image.
      *
      * @param interval The number of pixels between each grid line. Must be a positive integer.
      * @param color    The color to use for the grid lines.
@@ -420,6 +492,36 @@ public class Camera implements Cloneable {
             _camera._pixelHeight = _camera._height / _camera._nY;
 
             _camera._vpCenter = _camera._p0.add(_camera._vTo.scale(_camera._distance));
+        }
+
+        /**
+         * Sets the number of threads to be used for rendering the image.
+         *
+         * @param threads The number of threads to use for rendering.
+         * @return The Builder instance for chaining method calls.
+         */
+        public Builder setMultithreading(int threads) {
+            if (threads < -3) {
+                throw new IllegalArgumentException("Multithreading must be -2 or higher");
+            }
+            if (threads == -2) {
+                int cores = Runtime.getRuntime().availableProcessors() - SPARE_THREADS;
+                _camera.threadsCount = cores <= 2 ? 1 : cores;
+            } else
+                _camera.threadsCount = threads;
+            return this;
+        }
+
+        /**
+         * Set debug printing interval. If it's zero, there won't be printing at all
+         *
+         * @param interval printing interval in %
+         * @return builder object itself
+         */
+        public Builder setDebugPrint(double interval) {
+            if (interval < 0) throw new IllegalArgumentException("interval parameter must be non-negative");
+            _camera.printInterval = interval;
+            return this;
         }
     }
 }
