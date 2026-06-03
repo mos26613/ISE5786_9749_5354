@@ -170,9 +170,10 @@ class BonusShowcaseTests {
 
    /**
     * Produce the same Crystal Gallery image from the JSON scene file
-    * (json/crystalGallery.json) via the JSON SceneLoader. The parser has no
-    * polygon support, so quads are stored as triangle pairs; the camera is not
-    * part of the JSON, so it is supplied here with the same parameters.
+    * (json/crystalGallery.json) via the JSON SceneLoader. Quads (floor tiles,
+    * mirror, frame, dice faces) are loaded as Polygons and the tetrahedron as
+    * Triangles, mirroring the hand-coded scene; the camera is not part of the
+    * JSON, so it is supplied here with the same parameters.
     * @throws IOException if the JSON scene file cannot be read
     */
    @Test
