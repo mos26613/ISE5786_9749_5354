@@ -1,0 +1,19 @@
+{
+  "scene": {
+    "name": "Polygon",
+    "background-color": "0 0 0",
+    "ambient-light": { "color": "32 32 32" },
+    "geometries": {
+      "polygon": [
+        {
+          "p0": "-50 -50 -100",
+          "p1": "50 -50 -100",
+          "p2": "50 50 -100",
+          "p3": "-50 50 -100",
+          "emission": "20 20 80",
+          "material": { "kD": "0.5", "kS": "0.5", "shininess": "60" }
+        }
+      ]
+    }
+  }
+}
