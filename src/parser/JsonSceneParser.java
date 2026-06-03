@@ -88,6 +88,14 @@ public final class JsonSceneParser implements SceneParser {
      */
     private static final String KEY_TRIANGLE = "triangle";
     /**
+     * Polygon array key.
+     */
+    private static final String KEY_POLYGON = "polygon";
+    /**
+     * Prefix of the numbered polygon-vertex attribute keys ({@code p0}, {@code p1}, ...).
+     */
+    private static final String KEY_VERTEX_PREFIX = "p";
+    /**
      * Plane array key.
      */
     private static final String KEY_PLANE = "plane";
@@ -244,6 +252,7 @@ public final class JsonSceneParser implements SceneParser {
         Geometries composite = new Geometries();
         readSpheres(node, composite);
         readTriangles(node, composite);
+        readPolygons(node, composite);
         readPlanes(node, composite);
         readTubes(node, composite);
         readCylinders(node, composite);
@@ -283,6 +292,28 @@ public final class JsonSceneParser implements SceneParser {
                     item.getString(KEY_P0),
                     item.getString(KEY_P1),
                     item.getString(KEY_P2))));
+        }
+    }
+
+    /**
+     * Reads all polygon entries from the geometries node. Each entry lists its
+     * vertices, in edge order, under numbered keys {@code p0}, {@code p1},
+     * {@code p2}, ...; reading stops at the first missing index.
+     *
+     * @param node      the geometries JSON object
+     * @param composite the target composite collection
+     */
+    private static void readPolygons(JSONObject node, Geometries composite) {
+        JSONArray items = node.optJSONArray(KEY_POLYGON);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            List<String> vertexAttrs = new ArrayList<>();
+            for (int v = 0; item.has(KEY_VERTEX_PREFIX + v); v++) {
+                vertexAttrs.add(item.getString(KEY_VERTEX_PREFIX + v));
+            }
+            composite.add(applyAppearance(item,
+                    GeometryFactory.buildPolygon(vertexAttrs.toArray(new String[0]))));
         }
     }
 

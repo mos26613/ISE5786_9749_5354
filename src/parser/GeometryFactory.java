@@ -2,10 +2,12 @@ package parser;
 
 import geometries.impl.Cylinder;
 import geometries.impl.Plane;
+import geometries.impl.Polygon;
 import geometries.impl.Sphere;
 import geometries.impl.Triangle;
 import geometries.impl.Tube;
 import primitives.Material;
+import primitives.Point;
 import primitives.Ray;
 
 /**
@@ -44,6 +46,23 @@ final class GeometryFactory {
                 AttributeParser.parsePoint(p0Attr),
                 AttributeParser.parsePoint(p1Attr),
                 AttributeParser.parsePoint(p2Attr));
+    }
+
+    /**
+     * Builds a convex polygon from an ordered list of vertex attributes.
+     * <p>
+     * Vertex-count (at least three), coplanarity, and convexity are validated by
+     * the {@link Polygon} constructor.
+     *
+     * @param vertexAttrs the polygon vertices in edge order, each as "x y z"
+     * @return the built polygon
+     */
+    static Polygon buildPolygon(String... vertexAttrs) {
+        Point[] vertices = new Point[vertexAttrs.length];
+        for (int i = 0; i < vertexAttrs.length; i++) {
+            vertices[i] = AttributeParser.parsePoint(vertexAttrs[i]);
+        }
+        return new Polygon(vertices);
     }
 
     /**

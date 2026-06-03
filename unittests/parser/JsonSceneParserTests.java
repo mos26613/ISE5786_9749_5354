@@ -83,4 +83,26 @@ class JsonSceneParserTests {
         assertNotNull(scene.geometries.findIntersections(down),
                 "Expected an intersection with the cylinder along the central ray");
     }
+
+    /**
+     * Tests {@link JsonSceneParser#parse(String)} on a fixture that declares a
+     * four-vertex polygon. Verifies that the scene name round-trips and that the
+     * quad (facing -Z, enclosing the origin's line of sight) is hit by the central
+     * camera ray, confirming the polygon's numbered vertex keys were parsed.
+     *
+     * @throws IOException if the fixture file cannot be read
+     */
+    @Test
+    void testParsePolygon() throws IOException {
+        // Arrange + Act
+        Scene scene = new JsonSceneParser().parse("polygonTest");
+
+        // Assert — scalar field
+        assertEquals("Polygon", scene.name, "Wrong scene name");
+
+        // Assert — a ray from the origin toward -Z must hit the polygon.
+        Ray down = new Ray(Point.ZERO, new Vector(0, 0, -1));
+        assertNotNull(scene.geometries.findIntersections(down),
+                "Expected an intersection with the polygon along the central ray");
+    }
 }
