@@ -28,17 +28,17 @@ import scene.Scene;
  * more than ten bodies, uses every implemented primitive type (Sphere, Plane via
  * tiled Polygons, Triangle, Polygon, Cylinder, Tube) and demonstrates every
  * effect implemented through stage 8 (ambient, emission, Phong diffuse/specular,
- * directional + point + spot lights, hard and partial shadows, reflection and
+ * directional + point + spotlights, hard and partial shadows, reflection, and
  * transparency).
  * <p>
  * No closed body mixes transparency and reflection: the glass sphere, the
- * translucent tube and the dice are transparency-only; the chrome sphere and the
+ * translucent tube, and the dice are transparency-only; the chrome sphere and the
  * mirror are reflection-only.
  */
 class BonusShowcaseTests {
 
-   /** Default constructor to satisfy the JavaDoc generator. */
-   BonusShowcaseTests() { /* to satisfy JavaDoc generator */ }
+   /** Default constructor to satisfy the Javadoc generator. */
+   BonusShowcaseTests() { /* to satisfy Javadoc generator */ }
 
    /** Uniform world scale so the scene spans hundreds of units (comfortable for the fixed secondary-ray DELTA). */
    private static final double S = 50.0;
@@ -97,7 +97,7 @@ class BonusShowcaseTests {
             .setKR(0.85)));
 
       // glossy crimson sphere -------------------------------------------------
-      scene.geometries.add(new Sphere(p(-1.4, 1.0, 3.6), 1.0 * S)
+      scene.geometries.add(new Sphere(p(-1.4, 1.0, 3.6), S)
          .setMaterial(solid(0.85, 0.10, 0.14, 0.7, 0.6, 200, 0.3)));
 
       // glowing orb (emissive; also lit from the warm point light) ------------
@@ -137,7 +137,7 @@ class BonusShowcaseTests {
          .setKS(0.6).setShininess(220).setKA(new Double3(0.14, 0.19, 0.25))
          .setKT(new Double3(0.42, 0.58, 0.76));
       Material pipMat = solid(0.06, 0.06, 0.09, 0.7, 0.5, 120, 0.4);
-      addDie(scene, 5.4, 2.0, 1.2, 45, 32, diceBody, pipMat);
+      addDie(scene, diceBody, pipMat);
 
       // lights ----------------------------------------------------------------
       scene.lights.add(new DirectionalLight(new Color(470, 422, 340),
@@ -260,22 +260,18 @@ class BonusShowcaseTests {
    /**
     * Adds a cube resting on a corner: its (1,1,1) diagonal is lifted vertical,
     * spun by {@code yawDeg}, then leaned {@code tiltDeg} toward the camera so its
-    * three upper faces present clearly. The cube is auto-grounded so its lowest
-    * vertex sits on the floor at design (cx,cz). Built from six {@link Polygon}
-    * faces plus flat {@link Cylinder} pips on all six faces (opposite faces sum
-    * to 7), so whichever three faces front the camera always show their dots.
+    * three upper faces present clearly. The cube is auto-grounded, so its lowest
+    * vertex sits on the floor at design ({@code cxU},{@code czU}). Built from six
+    * {@link Polygon} faces plus flat {@link Cylinder} pips on all six faces
+    * (opposite faces sum to 7), so whichever three faces front the camera always
+    * show their dots. The resting position, half-edge, and orientation are fixed
+    * local constants.
     * @param scene   the scene to populate
-    * @param cxU     design x of the resting position
-    * @param czU     design z of the resting position
-    * @param halfU   design half-edge of the cube
-    * @param yawDeg  spin about the vertical, in degrees
-    * @param tiltDeg lean toward the camera (+Z), in degrees
     * @param body    material for the (transparent) faces
     * @param pipMat  material for the (opaque) pips
     */
-   private static void addDie(Scene scene, double cxU, double czU, double halfU,
-                              double yawDeg, double tiltDeg,
-                              Material body, Material pipMat) {
+   private static void addDie(Scene scene, Material body, Material pipMat) {
+      double cxU = 5.4, czU = 2.0, halfU = 1.2, yawDeg = 45, tiltDeg = 32;
       double s = halfU * S;
       double[] rp = {
          Math.acos(1.0 / Math.sqrt(3)),         // align angle
@@ -310,13 +306,13 @@ class BonusShowcaseTests {
       for (int f = 0; f < 6; f++) {
          Point[] c = new Point[4];
          for (int kk = 0; kk < 4; kk++)
-            c[kk] = dieXform(corners[f][kk], rp, tX, tY, tZ);
+            c[kk] = dieTransform(corners[f][kk], rp, tX, tY, tZ);
          scene.geometries.add(new Polygon(c[0], c[1], c[2], c[3]).setMaterial(body));
 
          // pips on this face
          double[] nr = rotDie(normals[f][0], normals[f][1], normals[f][2], rp);
          Vector nWorld = new Vector(nr[0], nr[1], nr[2]).normalize();
-         Point faceCenter = dieXform(new double[]{
+         Point faceCenter = dieTransform(new double[]{
             normals[f][0] * s, normals[f][1] * s, normals[f][2] * s}, rp, tX, tY, tZ);
          Vector u = c[1].subtract(c[0]).normalize();
          Vector vAxis = nWorld.crossProduct(u).normalize();
@@ -332,8 +328,8 @@ class BonusShowcaseTests {
    }
 
    /**
-    * Applies the dice orientation to a local point: Rodrigues alignment of the
-    * (1,1,1) diagonal to +Y, then a spin about Y, then a lean about X.
+    * Applies the dice orientation to a local point: Rodrigue alignment of the
+    * (1,1,1) diagonal to +Y, then a spin about Y, then lean about X.
     * @param x  local x
     * @param y  local y
     * @param z  local z
@@ -348,8 +344,8 @@ class BonusShowcaseTests {
       double rx = x * cosA + cx * sinA + ax * dot * oneMinus;
       double ry = y * cosA + cy * sinA + ay * dot * oneMinus;
       double rz = z * cosA + cz * sinA + az * dot * oneMinus;
-      double yx = rp[4] * rx + rp[5] * rz, yy = ry, yz = -rp[5] * rx + rp[4] * rz;
-      return new double[]{yx, rp[6] * yy - rp[7] * yz, rp[7] * yy + rp[6] * yz};
+      double yx = rp[4] * rx + rp[5] * rz, yz = -rp[5] * rx + rp[4] * rz;
+      return new double[]{yx, rp[6] * ry - rp[7] * yz, rp[7] * ry + rp[6] * yz};
    }
 
    /**
@@ -361,7 +357,7 @@ class BonusShowcaseTests {
     * @param tZ    translation z
     * @return the world-space point
     */
-   private static Point dieXform(double[] local, double[] rp,
+   private static Point dieTransform(double[] local, double[] rp,
                                  double tX, double tY, double tZ) {
       double[] r = rotDie(local[0], local[1], local[2], rp);
       return new Point(r[0] + tX, r[1] + tY, r[2] + tZ);
@@ -371,7 +367,7 @@ class BonusShowcaseTests {
     * Standard die pip layout for a face.
     * @param n number of pips (1..6)
     * @param d half the pip spacing, in world units
-    * @return list of (u,v) face-local pip offsets
+    * @return array of (u,v) face-local pip offsets
     */
    private static double[][] pipOffsets(int n, double d) {
       return switch (n) {
