@@ -14,7 +14,7 @@ import static primitives.Util.isZero;
  * Reusable beam / target-area infrastructure shared by every super-sampling effect
  * (antialiasing, depth of field, soft shadows, glossy / diffuse glass).
  * <p>
- * A Blackboard distributes sample points evenly over a two-dimensional target area
+ * A BeamSampler distributes sample points evenly over a two-dimensional target area
  * and turns them into a beam of rays. The dimensionless sample <em>pattern</em> is
  * decided once at construction; the actual three-dimensional placement (center,
  * orthonormal basis, size) and the ray geometry (apex, direction, normal offset) are
@@ -22,7 +22,7 @@ import static primitives.Util.isZero;
  * reused for every pixel, shaded point, or hit point, with no per-call allocation of
  * the object itself.
  */
-public final class Blackboard {
+public final class BeamSampler {
 
     /**
      * The distribution pattern of the samples over the unit target area.
@@ -100,7 +100,7 @@ public final class Blackboard {
     private final List<Point2D> _gridCache;
 
     /**
-     * Constructs a Blackboard with the given sampling configuration.
+     * Constructs a BeamSampler with the given sampling configuration.
      *
      * @param samplesPerAxis the number of samples along one axis of the target area
      *                       (e.g. {@code 9} yields up to 81 samples); a value below
@@ -108,8 +108,8 @@ public final class Blackboard {
      * @param shape          the shape of the target area
      * @param pattern        the sample distribution pattern
      */
-    public Blackboard(int samplesPerAxis, Shape shape, Pattern pattern) {
-        _edge = Math.max(1, samplesPerAxis);
+    public BeamSampler(int samplesPerAxis, Shape shape, Pattern pattern) {
+        _edge = Math.max(1, samplesPerAxis); //
         _shape = shape;
         _pattern = pattern;
         _gridCache = pattern == Pattern.GRID ? buildOffsets() : null;

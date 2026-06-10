@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Tests for {@link Blackboard} super-sampling infrastructure.
+ * Tests for {@link BeamSampler} super-sampling infrastructure.
  * The tests verify sample counts, the on/off boundary, that points stay within the
  * configured square / circular area and on its plane, and the two beam directions
  * ({@code fromPoints} true / false).
  */
-class BlackboardTests {
+class BeamSamplerTests {
     /**
      * Delta value for accuracy when comparing double values.
      */
@@ -47,10 +47,10 @@ class BlackboardTests {
     /**
      * Default constructor to satisfy the JavaDoc generator.
      */
-    BlackboardTests() { /* to satisfy JavaDoc generator */ }
+    BeamSamplerTests() { /* to satisfy JavaDoc generator */ }
 
     /**
-     * Test method for {@link Blackboard#targetPoints(Point, Vector, Vector, double)}.
+     * Test method for {@link BeamSampler#targetPoints(Point, Vector, Vector, double)}.
      * Verifies the number of generated points for a grid and the single-sample case.
      */
     @Test
@@ -58,14 +58,14 @@ class BlackboardTests {
         // ============ Equivalence Partitions Tests ==============
 
         // EP01: a 5x5 square grid yields exactly 25 points
-        Blackboard grid5 = new Blackboard(5, Blackboard.Shape.SQUARE, Blackboard.Pattern.GRID);
+        BeamSampler grid5 = new BeamSampler(5, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
         assertEquals(25, grid5.targetPoints(CENTER, VX, VY, SIZE).size(),
                 "ERROR: 5x5 grid must yield 25 points");
 
         // =============== Boundary Values Tests ==================
 
         // BV01: a single sample per axis yields one central point (effect disabled)
-        Blackboard single = new Blackboard(1, Blackboard.Shape.SQUARE, Blackboard.Pattern.GRID);
+        BeamSampler single = new BeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
         List<Point> points = single.targetPoints(CENTER, VX, VY, SIZE);
         assertEquals(1, points.size(), "ERROR: single-sample grid must yield 1 point");
         assertEquals(0, points.get(0).distance(CENTER), DELTA,
@@ -73,12 +73,12 @@ class BlackboardTests {
     }
 
     /**
-     * Test method for {@link Blackboard#targetPoints(Point, Vector, Vector, double)}.
+     * Test method for {@link BeamSampler#targetPoints(Point, Vector, Vector, double)}.
      * Verifies that every generated point lies inside the square area and on its plane.
      */
     @Test
     void testPointsInsideSquare() {
-        Blackboard grid = new Blackboard(7, Blackboard.Shape.SQUARE, Blackboard.Pattern.JITTERED);
+        BeamSampler grid = new BeamSampler(7, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.JITTERED);
         Vector normal = VX.crossProduct(VY);
 
         // ============ Equivalence Partitions Tests ==============
@@ -100,13 +100,13 @@ class BlackboardTests {
     }
 
     /**
-     * Test method for {@link Blackboard#targetPoints(Point, Vector, Vector, double)}.
+     * Test method for {@link BeamSampler#targetPoints(Point, Vector, Vector, double)}.
      * Verifies that every point of a circular area stays within its radius and that
      * corner samples are rejected.
      */
     @Test
     void testPointsInsideCircle() {
-        Blackboard circle = new Blackboard(9, Blackboard.Shape.CIRCLE, Blackboard.Pattern.GRID);
+        BeamSampler circle = new BeamSampler(9, BeamSampler.Shape.CIRCLE, BeamSampler.Pattern.GRID);
         List<Point> points = circle.targetPoints(CENTER, VX, VY, SIZE);
 
         // ============ Equivalence Partitions Tests ==============
@@ -121,13 +121,13 @@ class BlackboardTests {
     }
 
     /**
-     * Test method for {@link Blackboard#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
+     * Test method for {@link BeamSampler#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
      * Verifies the apex-to-points beam shape (anti-aliasing style): one ray per sample,
      * all sharing the apex origin.
      */
     @Test
     void testBeamThroughPoints() {
-        Blackboard grid = new Blackboard(5, Blackboard.Shape.SQUARE, Blackboard.Pattern.GRID);
+        BeamSampler grid = new BeamSampler(5, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
         List<Ray> rays = grid.beam(CENTER, VX, VY, SIZE, APEX, false, null);
 
         // ============ Equivalence Partitions Tests ==============
@@ -142,13 +142,13 @@ class BlackboardTests {
     }
 
     /**
-     * Test method for {@link Blackboard#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
+     * Test method for {@link BeamSampler#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
      * Verifies the points-to-apex beam shape (depth-of-field style): every ray converges
      * on the apex.
      */
     @Test
     void testBeamFromPoints() {
-        Blackboard grid = new Blackboard(5, Blackboard.Shape.SQUARE, Blackboard.Pattern.GRID);
+        BeamSampler grid = new BeamSampler(5, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
         List<Ray> rays = grid.beam(CENTER, VX, VY, SIZE, APEX, true, null);
 
         // ============ Equivalence Partitions Tests ==============
@@ -164,12 +164,12 @@ class BlackboardTests {
     }
 
     /**
-     * Test method for {@link Blackboard#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
-     * Verifies that a disabled Blackboard reproduces the single central ray.
+     * Test method for {@link BeamSampler#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
+     * Verifies that a disabled BeamSampler reproduces the single central ray.
      */
     @Test
     void testDisabledBeam() {
-        Blackboard single = new Blackboard(1, Blackboard.Shape.SQUARE, Blackboard.Pattern.GRID);
+        BeamSampler single = new BeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
 
         // =============== Boundary Values Tests ==================
 
