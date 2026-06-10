@@ -9,11 +9,14 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-import sampling.BeamSampler;
 import scene.Scene;
 
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
+
+import sampling.BeamSampler;
+import static sampling.BeamSampler.Pattern.*;
+import static sampling.BeamSampler.Shape.*;
 
 /**
  * Represents a camera in a 3D scene, defined by its position, orientation, view plane size, and resolution.
@@ -78,7 +81,7 @@ public class Camera implements Cloneable {
      */
     private RayTracerBase _rayTracer;
     /** The BeamSampler responsible for generating multiple rays through a pixel for effects like antialiasing. */
-    private BeamSampler _beamSampler =  new BeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
+    private BeamSampler _beamSampler =  new BeamSampler(1, SQUARE, GRID);
 
     /**
      * The number of threads used for rendering the image.
