@@ -601,7 +601,7 @@ public class Camera implements Cloneable {
          * @return The Builder instance for chaining method calls.
          */
         public Builder setMultithreading(int threads) {
-            if (threads < -3) {
+            if (threads < -2) {
                 throw new IllegalArgumentException("Multithreading must be -2 or higher");
             }
             if (threads == -2) {
