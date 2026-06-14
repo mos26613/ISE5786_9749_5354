@@ -9,14 +9,11 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
+import sampling.BeamSampler;
 import scene.Scene;
 
 import static primitives.Util.alignZero;
 import static primitives.Util.isZero;
-
-import sampling.BeamSampler;
-import static sampling.BeamSampler.Pattern.*;
-import static sampling.BeamSampler.Shape.*;
 
 /**
  * Represents a camera in a 3D scene, defined by its position, orientation, view plane size, and resolution.
@@ -80,8 +77,10 @@ public class Camera implements Cloneable {
      * The RayTracer responsible for tracing rays through the scene and generating pixel colors.
      */
     private RayTracerBase _rayTracer;
-    /** The BeamSampler responsible for generating multiple rays through a pixel for effects like antialiasing. */
-    private BeamSampler _beamSampler =  new BeamSampler(1, SQUARE, GRID);
+    /**
+     * The BeamSampler used to generate a beam of rays through each pixel for effects like antialiasing.
+     */
+    private BeamSampler _antialiasingBeamSampler;
 
     /**
      * The number of threads used for rendering the image.
@@ -169,7 +168,9 @@ public class Camera implements Cloneable {
             threads.add(new Thread(() -> {
                 PixelManager.Pixel pixel;
                 while ((pixel = pixelManager.nextPixel()) != null)
-                    castRay(pixel.col(), pixel.row());
+                    // the supplied PixelManager fills Pixel(col, row) from (rowCounter, colCounter),
+                    // so its accessors are inverted relative to castRay(column, row)
+                    castRay(pixel.row(), pixel.col());
             }));
         for (var thread : threads) thread.start();
         try {
@@ -234,7 +235,7 @@ public class Camera implements Cloneable {
      */
     public List<Ray> constructRays(int xIndex, int yIndex) {
         Point center = getPixelCenter(xIndex, yIndex);
-        return _beamSampler.beam(center, _vRight, _vUp, Math.min(_pixelWidth, _pixelHeight),
+        return _antialiasingBeamSampler.beam(center, _vRight, _vUp, Math.min(_pixelWidth, _pixelHeight),
                 _p0, false, null);
     }
 
@@ -278,6 +279,11 @@ public class Camera implements Cloneable {
          * The Camera instance being built. The Builder modifies this instance and returns a clone of it when build() is called.
          */
         private final Camera _camera = new Camera();
+        /**
+         * The pending soft-shadow BeamSampler, applied to the ray tracer in {@link #build()};
+         * {@code null} leaves the ray tracer's disabled default (hard shadows).
+         */
+        private BeamSampler _softShadowSampler;
 
         /**
          * Satisfy Javadoc tool.
@@ -409,17 +415,54 @@ public class Camera implements Cloneable {
         }
 
         /**
-         * Sets the BeamSampler for the camera with the specified configuration.
+         * Sets the antialiasing BeamSampler used to spread the primary rays inside a pixel.
+         *
+         * @param sampler the BeamSampler used to generate the per-pixel ray beam
+         * @return The Builder instance for chaining method calls.
+         */
+        public Builder setAntialiasingBeamSampler(BeamSampler sampler) {
+            _camera._antialiasingBeamSampler = sampler;
+            return this;
+        }
+
+        /**
+         * Sets the antialiasing BeamSampler from its configuration.
          *
          * @param edge    The number of samples along one axis of the target area (e.g., 9 yields up to 81 samples);
          *                a value below 2 disables super-sampling (single central ray).
          * @param shape   The shape of the target area for sampling (e.g., SQUARE, CIRCLE).
-         * @param pattern The sample distribution pattern (e.g., GRID, RANDOM).
+         * @param pattern The sample distribution pattern (e.g., GRID, JITTERED).
          * @return The Builder instance for chaining method calls.
          */
-        public Builder setBeamSampler(int edge, BeamSampler.Shape shape, BeamSampler.Pattern pattern) {
-            _camera._beamSampler = new BeamSampler(edge, shape, pattern);
+        public Builder setAntialiasingBeamSampler(int edge, BeamSampler.Shape shape, BeamSampler.Pattern pattern) {
+            return setAntialiasingBeamSampler(new BeamSampler(edge, shape, pattern));
+        }
+
+        /**
+         * Sets the shared BeamSampler used by every light source for soft shadows.
+         * The same sampler is reused for all lights; the per-light area diameter is the
+         * light's own {@code size}. A disabled (single-sample) sampler keeps shadows hard.
+         * It is applied to the ray tracer when the camera is built.
+         *
+         * @param sampler the BeamSampler used to generate shadow-ray beams
+         * @return The Builder instance for chaining method calls.
+         */
+        public Builder setSoftShadowSampler(BeamSampler sampler) {
+            _softShadowSampler = sampler;
             return this;
+        }
+
+        /**
+         * Sets the shared soft-shadow BeamSampler from its configuration.
+         *
+         * @param edge    The number of shadow-ray samples along one axis of the light area
+         *                (a value below 2 disables soft shadows: a single central shadow ray).
+         * @param shape   The shape of the light's sampling area (e.g., SQUARE, CIRCLE).
+         * @param pattern The sample distribution pattern (e.g., GRID, JITTERED).
+         * @return The Builder instance for chaining method calls.
+         */
+        public Builder setSoftShadowSampler(int edge, BeamSampler.Shape shape, BeamSampler.Pattern pattern) {
+            return setSoftShadowSampler(new BeamSampler(edge, shape, pattern));
         }
 
         /**
@@ -469,6 +512,13 @@ public class Camera implements Cloneable {
             if (_camera._rayTracer == null) {
                 setRayTracer(new Scene("test"), RayTracerType.SIMPLE);
             }
+            if (_camera._antialiasingBeamSampler == null) {
+                setAntialiasingBeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
+            }
+            if (_softShadowSampler == null) {
+                setSoftShadowSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
+            }
+            _camera._rayTracer.setSoftShadowSampler(_softShadowSampler);
 
             try {
                 return (Camera) _camera.clone();
