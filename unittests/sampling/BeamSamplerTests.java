@@ -164,6 +164,34 @@ class BeamSamplerTests {
     }
 
     /**
+     * Test method for {@link BeamSampler#beam(Point, Vector, double, Point, boolean, Vector)}.
+     * Verifies the soft-shadow beam shape (direction-derived basis): one ray per disk
+     * sample, every ray sharing the shaded-point apex, and the central ray aiming from
+     * the apex straight at the light center.
+     */
+    @Test
+    void testShadowBeam() {
+        BeamSampler grid = new BeamSampler(5, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
+        Vector dir = Vector.AXIS_Z;
+        // beam from the shaded point (apex) through samples on the light disk (fromPoints = false)
+        List<Ray> rays = grid.beam(CENTER, dir, SIZE, APEX, false, null);
+
+        // ============ Equivalence Partitions Tests ==============
+
+        // EP01: one ray per sample of the 5x5 square grid
+        assertEquals(25, rays.size(), "ERROR: shadow beam must have one ray per sample");
+
+        // EP02: every shadow ray starts at the shaded-point apex
+        for (Ray ray : rays)
+            assertEquals(0, ray.origin().distance(APEX), DELTA,
+                    "ERROR: shadow rays must share the shaded-point apex");
+
+        // EP03: the beam contains the central apex-to-light-center ray
+        assertTrue(rays.contains(new Ray(APEX, CENTER.subtract(APEX))),
+                "ERROR: the beam must include the central ray aimed at the light center");
+    }
+
+    /**
      * Test method for {@link BeamSampler#beam(Point, Vector, Vector, double, Point, boolean, Vector)}.
      * Verifies that a disabled BeamSampler reproduces the single central ray.
      */

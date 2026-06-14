@@ -4,6 +4,7 @@ import lighting.LightSource;
 import primitives.Color;
 import primitives.Ray;
 import primitives.Vector;
+import sampling.BeamSampler;
 import scene.Scene;
 
 import static geometries.api.Intersectable.Intersection;
@@ -18,6 +19,14 @@ abstract class RayTracerBase {
      * Reference to the scene being rendered
      */
     protected Scene _scene;
+
+    /**
+     * The shared BeamSampler used to generate the beam of shadow rays toward an
+     * area light for soft shadows. The ray tracer is its sole owner; the
+     * {@link Camera.Builder} configures it. The default is a disabled (single-sample)
+     * sampler, so a ray tracer that is never configured still casts hard shadows.
+     */
+    protected BeamSampler _softShadowSampler = new BeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
 
     /**
      * Default constructor for RayTracerBase to satisfy Javadoc tool
@@ -42,6 +51,15 @@ abstract class RayTracerBase {
      * @return The color resulting from tracing the ray through the scene.
      */
     abstract Color traceRay(Ray ray);
+
+    /**
+     * Injects the shared soft-shadow BeamSampler owned by the camera.
+     *
+     * @param softShadowSampler the BeamSampler used to generate shadow-ray beams
+     */
+    void setSoftShadowSampler(BeamSampler softShadowSampler) {
+        _softShadowSampler = softShadowSampler;
+    }
 
     /**
      * Preprocesses the intersection by calculating the normal vector at the intersection point and the dot product of the ray direction and the normal vector.

@@ -1,8 +1,11 @@
 package renderer;
 
+import java.util.List;
+
 import lighting.LightSource;
 import primitives.Color;
 import primitives.Double3;
+import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
 import scene.Scene;
@@ -12,6 +15,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.pow;
 import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
 
 /**
  * A simple ray tracer implementation that calculates the color of a point.
@@ -67,21 +71,56 @@ class SimpleRayTracer extends RayTracerBase {
 
     /**
      * Calculates the transparency factor (ktr) for the given intersection point, which represents how much light can pass through the geometries between the light source and the intersection point.
+     * <p>
+     * When the light has no area ({@code size == 0}) a single shadow ray is cast toward the
+     * light (hard shadow). Otherwise the light is treated as an area light: a beam of shadow
+     * rays is cast toward sample points spread over the light's disk and the per-ray
+     * transparency factors are averaged (soft shadow / partial penumbra). Each ray of the beam
+     * is sign-checked independently; a sample direction that cannot illuminate the shaded side
+     * of the surface contributes zero (and is still counted in the average).
      *
      * @param intersection The intersection point for which to calculate the transparency factor.
-     * @return The transparency factor (ktr) for the given intersection point, which is a product of the transparency coefficients (kT) of all geometries that intersect with the shadow ray from the light source to the intersection point.
+     * @return The transparency factor (ktr) for the given intersection point.
      */
     private Double3 transparency(Intersection intersection) {
-        Vector pointToLight = intersection.l.scale(-1);
-        Ray shadowRay = new Ray(intersection.point, pointToLight, intersection.normal);
+        double lightDistance = intersection.light.getDistance(intersection.point);
+        double size = intersection.light.getSize();
+        if (isZero(size)) {
+            Ray shadowRay = new Ray(intersection.point, intersection.l.scale(-1), intersection.normal);
+            return transparency(shadowRay, intersection.point, lightDistance);
+        }
 
+        List<Ray> beam = _softShadowSampler.beam(intersection.light.getPosition(),
+                intersection.light.getSoftShadowAxis(intersection.point),
+                size, intersection.point, false, intersection.normal);
+        Double3 sum = Double3.ZERO;
+        for (Ray shadowRay : beam) {
+            // per-ray geometry check: the sample lights this side only when the ray direction
+            // (point -> sample, i.e. -l) lies on the opposite side of the surface from the view
+            if (alignZero(shadowRay.direction().dotProduct(intersection.normal)) * intersection.vNormal < 0) {
+                sum = sum.add(transparency(shadowRay, intersection.point, lightDistance));
+            }
+        }
+        return sum.divide(beam.size());
+    }
+
+    /**
+     * Accumulates the transparency factor (ktr) along a single shadow ray, as the product of
+     * the transparency coefficients (kT) of every geometry hit between the shaded point and the
+     * light.
+     *
+     * @param shadowRay     the shadow ray cast from the shaded point toward the light
+     * @param shadedPoint   the shaded point, used as the reference for the light-distance filter
+     * @param lightDistance the distance from the shaded point to the light source
+     * @return the accumulated transparency factor along the ray
+     */
+    private Double3 transparency(Ray shadowRay, Point shadedPoint, double lightDistance) {
         var shadowIntersections = _scene.geometries.calcIntersections(shadowRay);
         Double3 ktr = Double3.ONE;
         if (shadowIntersections == null) return ktr;
 
-        double lightDistance = intersection.light.getDistance(intersection.point);
         for (var shadowIntersection : shadowIntersections) {
-            if (alignZero(intersection.point.distance(shadowIntersection.point) - lightDistance) < 0 ) {
+            if (alignZero(shadedPoint.distance(shadowIntersection.point) - lightDistance) < 0) {
                 ktr = ktr.product(shadowIntersection.material.kT);
                 if (ktr.isLowerThan(MIN_CALC_COLOR_K)) {
                     return Double3.ZERO;
