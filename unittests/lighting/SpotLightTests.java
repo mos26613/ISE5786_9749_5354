@@ -6,12 +6,16 @@ import primitives.Point;
 import primitives.Vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Unit tests for the SpotLight class, which represents a spotlight light source in a scene.
  */
 class SpotLightTests {
+
+    /** Accuracy delta for double comparisons. */
+    private static final double DELTA = 1e-6;
 
     /** Satisfy Javadoc tool */
     SpotLightTests() {}
@@ -55,5 +59,25 @@ class SpotLightTests {
 
         //BV02 - Point is at the edge of the spotlight's cone (90 degrees)
         assertEquals(Color.BLACK, SL.getIntensity(new Point(0, 1, 0)), "ERROR in getIntensity - point is at the edge of the spotlight's cone!");
+    }
+
+    /**
+     * Tests the soft-shadow configuration inherited from PointLight, verifying that
+     * {@link SpotLight#setSize(double)} keeps the SpotLight type for fluent chaining
+     * and that {@link SpotLight#getPosition()} returns the construction position.
+     */
+    @Test
+    void testSoftShadowConfig() {
+        Point position = new Point(1, 2, 3);
+
+        // ============ Equivalence Partitions Tests ==============
+
+        // EP01 - setSize returns a SpotLight (chaining preserved) and getSize reflects it
+        SpotLight SL = new SpotLight(Color.BLACK, position, Vector.AXIS_X).setSize(4);
+        assertEquals(4, SL.getSize(), DELTA, "ERROR: getSize must reflect the set size");
+        assertSame(SL, SL.setSize(4), "ERROR: setSize must return the SpotLight itself for chaining");
+
+        // EP02 - getPosition returns the construction position
+        assertEquals(position, SL.getPosition(), "ERROR: getPosition must return the light position");
     }
 }

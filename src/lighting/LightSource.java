@@ -30,4 +30,28 @@ public interface LightSource {
      * @return the distance from the light source to the point
      */
     double getDistance(Point point);
+
+    /**
+     * Returns the diameter of this light's emitting area, used for soft shadows.
+     * A value of {@code 0} means a point-sized source that casts a hard shadow.
+     * @return the area-light diameter (size); {@code 0} for a hard shadow
+     */
+    double getSize();
+
+    /**
+     * Returns the position of this light source in space, used as the center of
+     * the area sampled for soft shadows.
+     * @return the light position, or {@code null} for sources that have no
+     *         position (e.g. a directional light)
+     */
+    Point getPosition();
+
+    /**
+     * Returns the unit direction that the soft-shadow target area is perpendicular to:
+     * the direction toward the shaded point for a point light, or the beam direction
+     * for a spot light.
+     * @param point the shaded point being tested
+     * @return the unit axis the area light's sampling disk is perpendicular to
+     */
+    Vector getSoftShadowAxis(Point point);
 }

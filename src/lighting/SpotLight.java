@@ -53,6 +53,20 @@ public class SpotLight extends PointLight {
         return (SpotLight) super.setKq(kq);
     }
 
+    /**
+     * Sets the diameter of the spotlight's emitting area for soft shadows.
+     * @param size the area-light diameter to set
+     * @return the SpotLight object itself for method chaining
+     */
+    public SpotLight setSize(double size) {
+        return (SpotLight) super.setSize(size);
+    }
+
+    @Override
+    public Vector getSoftShadowAxis(Point p) {
+        return _direction;
+    }
+
     @Override
     public Color getIntensity(Point p) {
         Vector l;

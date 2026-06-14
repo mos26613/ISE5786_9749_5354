@@ -40,4 +40,19 @@ public class DirectionalLight extends Light implements LightSource {
     public double getDistance(Point point) {
         return Double.POSITIVE_INFINITY;
     }
+
+    @Override
+    public double getSize() {
+        return 0d;
+    }
+
+    @Override
+    public Point getPosition() {
+        return null;
+    }
+
+    @Override
+    public Vector getSoftShadowAxis(Point point) {
+        return _direction;
+    }
 }

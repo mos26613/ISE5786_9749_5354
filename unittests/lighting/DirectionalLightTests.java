@@ -38,4 +38,18 @@ class DirectionalLightTests {
         DirectionalLight dl = new DirectionalLight(C, Vector.AXIS_X);
         assertEquals(C, dl.getIntensity(Point.ZERO), "ERROR in getIntensity!");
     }
+
+    /**
+     * Tests that a directional light reports no emitting area, so it always casts a
+     * hard shadow ({@link DirectionalLight#getSize()} is 0).
+     */
+    @Test
+    void testGetSize() {
+        DirectionalLight dl = new DirectionalLight(Color.BLACK, Vector.AXIS_X);
+
+        // ============ Equivalence Partitions Tests ==============
+
+        // EP01 - a directional light has no area (size 0 -> hard shadow)
+        assertEquals(0, dl.getSize(), 1e-6, "ERROR: a directional light must report size 0");
+    }
 }

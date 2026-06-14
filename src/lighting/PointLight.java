@@ -29,6 +29,11 @@ public class PointLight extends Light implements LightSource {
      * which determines how the intensity of the light decreases quadratically with distance.
      */
     private double _kQ = 0d;
+    /**
+     * The diameter of the light's emitting area, used for soft shadows.
+     * It is {@code 0} by default, meaning a point-sized source that casts a hard shadow.
+     */
+    private double _size = 0d;
 
     /**
      * Constructs a PointLight with the specified intensity and position.
@@ -60,6 +65,32 @@ public class PointLight extends Light implements LightSource {
     @Override
     public double getDistance(Point point) {
         return _position.distance(point);
+    }
+
+    @Override
+    public double getSize() {
+        return _size;
+    }
+
+    @Override
+    public Point getPosition() {
+        return _position;
+    }
+
+    @Override
+    public Vector getSoftShadowAxis(Point p) {
+        return getL(p);
+    }
+
+    /**
+     * Sets the diameter of the light's emitting area for soft shadows.
+     * A value of {@code 0} keeps the source point-sized (hard shadow).
+     * @param size the area-light diameter to set
+     * @return the PointLight object itself, allowing for method chaining
+     */
+    public PointLight setSize(double size) {
+        _size = size;
+        return this;
     }
 
     /**
