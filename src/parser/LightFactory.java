@@ -40,13 +40,14 @@ final class LightFactory {
      * @param kcAttr        the constant attenuation factor, or {@code null}
      * @param klAttr        the linear attenuation factor, or {@code null}
      * @param kqAttr        the quadratic attenuation factor, or {@code null}
+     * @param sizeAttr      the area-light diameter for soft shadows, or {@code null}
      * @return the built point light
      */
     static PointLight buildPoint(String intensityAttr, String positionAttr,
-                                 String kcAttr, String klAttr, String kqAttr) {
-        return applyAttenuation(new PointLight(
+                                 String kcAttr, String klAttr, String kqAttr, String sizeAttr) {
+        return applyOptional(new PointLight(
                 AttributeParser.parseColor(intensityAttr),
-                AttributeParser.parsePoint(positionAttr)), kcAttr, klAttr, kqAttr);
+                AttributeParser.parsePoint(positionAttr)), kcAttr, klAttr, kqAttr, sizeAttr);
     }
 
     /**
@@ -60,32 +61,36 @@ final class LightFactory {
      * @param kcAttr        the constant attenuation factor, or {@code null}
      * @param klAttr        the linear attenuation factor, or {@code null}
      * @param kqAttr        the quadratic attenuation factor, or {@code null}
+     * @param sizeAttr      the area-light diameter for soft shadows, or {@code null}
      * @return the built spot light
      */
     static SpotLight buildSpot(String intensityAttr, String positionAttr, String directionAttr,
-                               String kcAttr, String klAttr, String kqAttr) {
+                               String kcAttr, String klAttr, String kqAttr, String sizeAttr) {
         SpotLight light = new SpotLight(
                 AttributeParser.parseColor(intensityAttr),
                 AttributeParser.parsePoint(positionAttr),
                 AttributeParser.parseVector(directionAttr));
-        applyAttenuation(light, kcAttr, klAttr, kqAttr);
+        applyOptional(light, kcAttr, klAttr, kqAttr, sizeAttr);
         return light;
     }
 
     /**
-     * Applies the optional attenuation factors to a point light (or any subtype,
-     * such as a spot light). Each {@code null} attribute is skipped.
+     * Applies the optional attenuation factors and area-light size to a point light
+     * (or any subtype, such as a spot light). Each {@code null} attribute is skipped.
      *
-     * @param light  the light to configure
-     * @param kcAttr the constant attenuation factor, or {@code null}
-     * @param klAttr the linear attenuation factor, or {@code null}
-     * @param kqAttr the quadratic attenuation factor, or {@code null}
+     * @param light    the light to configure
+     * @param kcAttr   the constant attenuation factor, or {@code null}
+     * @param klAttr   the linear attenuation factor, or {@code null}
+     * @param kqAttr   the quadratic attenuation factor, or {@code null}
+     * @param sizeAttr the area-light diameter for soft shadows, or {@code null}
      * @return the same light, configured
      */
-    private static PointLight applyAttenuation(PointLight light, String kcAttr, String klAttr, String kqAttr) {
+    private static PointLight applyOptional(PointLight light, String kcAttr, String klAttr,
+                                            String kqAttr, String sizeAttr) {
         if (kcAttr != null) light.setKc(AttributeParser.parseDouble(kcAttr, "light kC"));
         if (klAttr != null) light.setKl(AttributeParser.parseDouble(klAttr, "light kL"));
         if (kqAttr != null) light.setKq(AttributeParser.parseDouble(kqAttr, "light kQ"));
+        if (sizeAttr != null) light.setSize(AttributeParser.parseDouble(sizeAttr, "light size"));
         return light;
     }
 }

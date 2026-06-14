@@ -211,6 +211,10 @@ public final class JsonSceneParser implements SceneParser {
      * Light quadratic-attenuation factor (kQ) attribute key.
      */
     private static final String KEY_KQ = "kQ";
+    /**
+     * Light area-diameter (size) attribute key, used for soft shadows.
+     */
+    private static final String KEY_SIZE = "size";
 
     /**
      * Default constructor.
@@ -453,7 +457,8 @@ public final class JsonSceneParser implements SceneParser {
                     item.getString(KEY_POSITION),
                     item.optString(KEY_KC, null),
                     item.optString(KEY_KL, null),
-                    item.optString(KEY_KQ, null)));
+                    item.optString(KEY_KQ, null),
+                    item.optString(KEY_SIZE, null)));
         }
     }
 
@@ -474,7 +479,8 @@ public final class JsonSceneParser implements SceneParser {
                     item.getString(KEY_DIRECTION),
                     item.optString(KEY_KC, null),
                     item.optString(KEY_KL, null),
-                    item.optString(KEY_KQ, null)));
+                    item.optString(KEY_KQ, null),
+                    item.optString(KEY_SIZE, null)));
         }
     }
 }
