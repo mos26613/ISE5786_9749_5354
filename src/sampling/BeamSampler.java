@@ -182,6 +182,9 @@ public final class BeamSampler {
      * @return the list of three-dimensional sample points
      */
     List<Point> targetPoints(Point center, Vector vX, Vector vY, double size) {
+        // A zero-size target area disables the effect: every sample would collapse onto the
+        // center anyway, so emit a single central point (one ray) regardless of pattern/edge.
+        if (isZero(size)) return List.of(center);
         List<Point2D> offsets = _pattern == Pattern.GRID ? _gridCache : buildOffsets();
         List<Point> points = new ArrayList<>(offsets.size());
         for (Point2D offset : offsets) {
@@ -203,6 +206,10 @@ public final class BeamSampler {
      * @return the freshly generated list of offsets
      */
     private List<Point2D> buildOffsets() {
+        // A single-sample beam disables the effect: emit exactly one central sample
+        // (the ideal ray / area center) regardless of pattern or shape, so an edge of 1
+        // is always a clean single-ray "off" switch and never yields an empty beam.
+        if (_edge <= 1) return List.of(new Point2D(0, 0));
         List<Point2D> offsets = new ArrayList<>(_edge * _edge);
         ThreadLocalRandom random = _pattern == Pattern.GRID ? null : ThreadLocalRandom.current();
         double step = 1.0 / _edge;
