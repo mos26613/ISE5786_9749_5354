@@ -116,13 +116,12 @@ class TeapotTest {
                 .setLocation(new Point(0, 0, -1000)).setDirection(Point.ZERO, Vector.AXIS_Y) //
                 .setVpDistance(1000).setVpSize(200, 200) //
                 .setMultithreading(-3) // fail - paging file size
-                // .setMultithreading(-2) // 9.3
+                 .setMultithreading(-2) // 9.3
                 // .setMultithreading(-1) // 9.6
                 //.setMultithreading(0) // 25
                 // .setMultithreading(1) // 25.8
                 // .setMultithreading(2) // 13.6
                 // .setMultithreading(3) // 10.7
-                .setMultithreading(12) // 8.3 BEST BY FAR!!!!!
                 .setDebugPrint(1.0) //
                 ;
     }
