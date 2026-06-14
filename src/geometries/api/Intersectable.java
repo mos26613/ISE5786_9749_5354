@@ -88,7 +88,7 @@ public abstract class Intersectable {
          */
         public LightSource light;
         /**
-         * The vector from the intersection point to the light source, used for lighting calculations.
+         * The vector from the ight source to the intersection point used for lighting calculations.
          */
         public Vector l;
         /**
