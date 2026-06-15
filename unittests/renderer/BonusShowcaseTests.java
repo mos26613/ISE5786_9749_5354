@@ -174,6 +174,8 @@ class BonusShowcaseTests {
                 .setDirection(p(-0.6, 2.0, -3.0), new Vector(0, 1, 0))
                 .setVpDistance(vpDist).setVpSize(vpW, vpH)
                 .setResolution(nx, ny)
+                .setMultithreading(-2)
+                .setDebugPrint(1)
                 .build()
                 .renderImage()
                 .writeToImage(name);
