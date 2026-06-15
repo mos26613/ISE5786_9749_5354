@@ -47,7 +47,7 @@ class SoftShadowTests {
     /** Samples per axis of the soft-shadow sampling disk (17 -> ~225 circular samples). */
     private static final int SS_SAMPLES = 17;
     /** Samples per axis of the camera's antialiasing sampling pattern. */
-    private static final int AA_SAMPLES = 17;
+    private static final int AA_SAMPLES = 9;
 
     /**
      * Builds a glossy/matte material whose diffuse and ambient coefficients carry the
@@ -376,9 +376,9 @@ class SoftShadowTests {
                 .setDirection(new Point(-35, 80, -35), Vector.AXIS_Y)
                 .setVpDistance(vpDist).setVpSize(vpW, vpH)
                 .setResolution(NX, NY)
-                .setAntialiasingBeamSampler(AA_SAMPLES, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.JITTERED)
+                .setAntialiasingBeamSampler(AA_SAMPLES, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID)
                 .setMultithreading(-2)
-                .setDebugPrint(1);
+                .setDebugPrint(0.1);
         if (softSampler != null) builder.setSoftShadowSampler(softSampler);
 
         Camera camera = builder.build();
@@ -396,6 +396,6 @@ class SoftShadowTests {
     @Test
     void zenGardenSoft() {
         render("zenGardenSoft", SOFT_LIGHT_SIZE, LANTERN_SIZE,
-                new BeamSampler(SS_SAMPLES, BeamSampler.Shape.CIRCLE, BeamSampler.Pattern.JITTERED));
+                new BeamSampler(SS_SAMPLES, BeamSampler.Shape.CIRCLE, BeamSampler.Pattern.GRID));
     }
 }
