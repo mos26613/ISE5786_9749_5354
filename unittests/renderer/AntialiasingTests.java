@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import parser.JsonSceneParser;
 import primitives.Point;
 import primitives.Vector;
-import sampling.BeamSampler;
 import scene.Scene;
 
 /** Tests for antialiasing. Renders the same scene with and without antialiasing, to visually compare the results. */

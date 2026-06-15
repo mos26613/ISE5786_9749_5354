@@ -1,4 +1,4 @@
-package sampling;
+package renderer;
 
 import java.util.List;
 

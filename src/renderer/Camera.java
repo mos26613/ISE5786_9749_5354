@@ -9,7 +9,6 @@ import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-import sampling.BeamSampler;
 import scene.Scene;
 
 import static primitives.Util.alignZero;

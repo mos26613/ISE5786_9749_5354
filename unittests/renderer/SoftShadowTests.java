@@ -16,7 +16,6 @@ import primitives.Material;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
-import sampling.BeamSampler;
 import scene.Scene;
 
 /**

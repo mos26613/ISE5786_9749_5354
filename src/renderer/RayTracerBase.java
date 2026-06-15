@@ -4,7 +4,6 @@ import lighting.LightSource;
 import primitives.Color;
 import primitives.Ray;
 import primitives.Vector;
-import sampling.BeamSampler;
 import scene.Scene;
 
 import static geometries.api.Intersectable.Intersection;

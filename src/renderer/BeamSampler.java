@@ -1,4 +1,4 @@
-package sampling;
+package renderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +22,12 @@ import static primitives.Util.isZero;
  * reused for every pixel, shaded point, or hit point, with no per-call allocation of
  * the object itself.
  */
-public final class BeamSampler {
+final class BeamSampler {
 
     /**
      * The distribution pattern of the samples over the unit target area.
      */
-    public enum Pattern {
+    enum Pattern {
         /**
          * A regular, deterministic lattice (computed once and cached).
          */
@@ -45,7 +45,7 @@ public final class BeamSampler {
     /**
      * The shape of the target area.
      */
-    public enum Shape {
+    enum Shape {
         /**
          * A full square (every grid sample is kept).
          */
@@ -108,7 +108,7 @@ public final class BeamSampler {
      * @param shape          the shape of the target area
      * @param pattern        the sample distribution pattern
      */
-    public BeamSampler(int samplesPerAxis, Shape shape, Pattern pattern) {
+    BeamSampler(int samplesPerAxis, Shape shape, Pattern pattern) {
         _edge = Math.max(1, samplesPerAxis); //
         _shape = shape;
         _pattern = pattern;
@@ -132,8 +132,8 @@ public final class BeamSampler {
      *                   {@code null} for primary camera rays
      * @return the beam of rays (a single central ray when the effect is disabled)
      */
-    public List<Ray> beam(Point center, Vector vX, Vector vY, double size,
-                          Point apex, boolean fromPoints, Vector normal) {
+    List<Ray> beam(Point center, Vector vX, Vector vY, double size,
+                   Point apex, boolean fromPoints, Vector normal) {
         List<Point> points = targetPoints(center, vX, vY, size);
         List<Ray> rays = new ArrayList<>(points.size());
         for (Point point : points) {
@@ -160,8 +160,8 @@ public final class BeamSampler {
      *                   {@code null} for primary camera rays
      * @return the beam of rays (a single central ray when the effect is disabled)
      */
-    public List<Ray> beam(Point center, Vector dir, double size,
-                          Point apex, boolean fromPoints, Vector normal) {
+    List<Ray> beam(Point center, Vector dir, double size,
+                   Point apex, boolean fromPoints, Vector normal) {
         Vector reference = Math.abs(dir.dotProduct(Vector.AXIS_Y)) < AXIS_ALIGN_LIMIT
                 ? Vector.AXIS_Y : Vector.AXIS_X;
         Vector vX = dir.crossProduct(reference).normalize();
