@@ -68,7 +68,7 @@ class BeamSamplerTests {
         BeamSampler single = new BeamSampler(1, BeamSampler.Shape.SQUARE, BeamSampler.Pattern.GRID);
         List<Point> points = single.targetPoints(CENTER, VX, VY, SIZE);
         assertEquals(1, points.size(), "ERROR: single-sample grid must yield 1 point");
-        assertEquals(0, points.get(0).distance(CENTER), DELTA,
+        assertEquals(0, points.getFirst().distance(CENTER), DELTA,
                 "ERROR: the single sample must be the area center");
     }
 
@@ -204,7 +204,7 @@ class BeamSamplerTests {
         // BV01: a single-sample beam is exactly the central ray (apex through the center)
         List<Ray> rays = single.beam(CENTER, VX, VY, SIZE, APEX, false, null);
         assertEquals(1, rays.size(), "ERROR: a disabled beam must contain one ray");
-        assertEquals(new Ray(APEX, CENTER.subtract(APEX)), rays.get(0),
+        assertEquals(new Ray(APEX, CENTER.subtract(APEX)), rays.getFirst(),
                 "ERROR: a disabled beam must be the central ray");
     }
 }

@@ -28,7 +28,7 @@ import scene.Scene;
  * refracts the trees behind it.
  * <p>
  * Rendered as a hard-vs-soft pair from the same view: point-sized lights (crisp shadows)
- * vs. sized area lights sampled by a beam (soft penumbrae). Each render is multi-threaded
+ * vs. sized area lights sampled by a beam (soft penumbrae). Each render is multithreaded
  * and prints its wall time.
  */
 class SoftShadowTests {
