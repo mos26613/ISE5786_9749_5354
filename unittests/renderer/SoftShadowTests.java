@@ -109,8 +109,30 @@ class SoftShadowTests {
     }
 
     /**
-     * Adds a stone lantern at (x, z): a dark cylinder post capped by an emissive glow
-     * sphere, plus a matching warm point light at the glow so the lantern lights the scene.
+     * Adds a lantern post (a slim dark cylinder) capped by an emissive glow sphere at
+     * (x, z) and returns the glow's center, so callers can attach either a point or a
+     * spot light to it.
+     *
+     * @param scene the scene to populate
+     * @param x     lantern x
+     * @param z     lantern z
+     * @param postH post height
+     * @return the glow sphere's center position
+     */
+    private static Point addLanternPost(Scene scene, double x, double z, double postH) {
+        double glowR = 20, glowY = postH + glowR * 0.4;
+        scene.geometries.add(new Cylinder(8d,
+                new Ray(new Point(x, 0, z), Vector.AXIS_Y), postH)
+                .setMaterial(solid(0.30, 0.30, 0.33, 0.7, 0.2, 40, 0.45)));
+        Point glow = new Point(x, glowY, z);
+        scene.geometries.add(new Sphere(glow, glowR)
+                .setEmission(new Color(255, 172, 84))
+                .setMaterial(new Material().setKD(new Double3(0.2, 0.13, 0.06)).setKS(0.1).setShininess(40)));
+        return glow;
+    }
+
+    /**
+     * Adds a stone lantern at (x, z) lit by a warm omnidirectional point light at its glow.
      *
      * @param scene     the scene to populate
      * @param x         lantern x
@@ -119,14 +141,8 @@ class SoftShadowTests {
      * @param lightSize the glow's area diameter (0 for a hard shadow)
      */
     private static void addLantern(Scene scene, double x, double z, double postH, double lightSize) {
-        double glowR = 20, glowY = postH + glowR * 0.4;
-        scene.geometries.add(new Cylinder(13d,
-                new Ray(new Point(x, 0, z), Vector.AXIS_Y), postH)
-                .setMaterial(solid(0.30, 0.30, 0.33, 0.7, 0.2, 40, 0.45)));
-        scene.geometries.add(new Sphere(new Point(x, glowY, z), glowR)
-                .setEmission(new Color(255, 172, 84))
-                .setMaterial(new Material().setKD(new Double3(0.2, 0.13, 0.06)).setKS(0.1).setShininess(40)));
-        scene.lights.add(new PointLight(new Color(345, 228, 120), new Point(x, glowY, z))
+        Point glow = addLanternPost(scene, x, z, postH);
+        scene.lights.add(new PointLight(new Color(345, 228, 120), glow)
                 .setKl(3E-4).setKq(4E-7).setSize(lightSize));
     }
 
@@ -304,7 +320,7 @@ class SoftShadowTests {
                         .setKR(new Double3(0.78, 0.80, 0.85))));
 
         // stone pillar rising from the pond (right of center) + meditating minifig
-        scene.geometries.add(new Cylinder(40d,
+        scene.geometries.add(new Cylinder(32d,
                 new Ray(new Point(-35, 0, 25), Vector.AXIS_Y), 48d)
                 .setMaterial(solid(0.42, 0.42, 0.46, 0.7, 0.25, 60, 0.5)));
         addMinifig(scene, -35, 48, 25, 26,
@@ -323,7 +339,7 @@ class SoftShadowTests {
                 solid(0.05, 0.30, 0.14, 0.7, 0.2, 40, 0.32), trunk);
 
         // glass crystal on a stone pedestal (focal point; refraction) -----------
-        scene.geometries.add(new Cylinder(50d,
+        scene.geometries.add(new Cylinder(42d,
                 new Ray(new Point(70, 0, -70), Vector.AXIS_Y), 22d)
                 .setMaterial(solid(0.40, 0.40, 0.43, 0.7, 0.25, 60, 0.5)));
         scene.geometries.add(new Sphere(new Point(70, 74, -70), 52d)
@@ -331,9 +347,16 @@ class SoftShadowTests {
                         .setKS(0.7).setShininess(300).setKA(new Double3(0.04, 0.05, 0.06))
                         .setKT(new Double3(0.65, 0.78, 0.85))));
 
-        // two stone lanterns (warm motivated lights) ----------------------------
+        // warm point-light lanterns: one foreground-right, one far back-left, so
+        // together with the tall spot they form a light-triangle around the scene
         addLantern(scene, 250, 60, 82, lanternSize);
-        addLantern(scene, -315, -245, 78, lanternSize);
+        addLantern(scene, -820, -360, 78, lanternSize);
+        // lantern behind the trees (upper-left of the stand): a strong warm SPOT
+        // aimed at the base of the rightmost tree, for an obvious warm pool there
+        Point treeLantern = addLanternPost(scene, 120, -450, 165);
+        scene.lights.add(new SpotLight(new Color(820, 575, 320), treeLantern,
+                new Point(-85, 10, -330).subtract(treeLantern))
+                .setKl(1E-4).setKq(1E-7).setSize(lanternSize));
 
         // cluster of river stones in the open foreground ------------------------
         Material stone = solid(0.56, 0.56, 0.60, 0.7, 0.3, 80, 0.62);
