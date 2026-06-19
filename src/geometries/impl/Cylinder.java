@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import primitives.AABB;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Util;
@@ -54,6 +55,13 @@ public class Cylinder extends Tube {
 
         // otherwise — point is on the side surface, delegate to Tube logic
         return super.getNormal(point);
+    }
+
+    @Override
+    protected AABB createBoundingBox() {
+        // Conservative box: enclose the two base centres, then grow by the radius on every
+        // axis. This fully contains the (possibly tilted) cylinder without needing a tight fit.
+        return AABB.around(_axis.origin(), _axis.getPoint(_height)).expand(_radius);
     }
 
     @Override

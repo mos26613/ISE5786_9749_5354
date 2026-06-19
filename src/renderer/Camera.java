@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.stream.IntStream;
 
+import geometries.api.Intersectable;
 import primitives.Color;
 import primitives.Point;
 import primitives.Ray;
@@ -103,6 +104,12 @@ public class Camera implements Cloneable {
     private PixelManager pixelManager;
 
     /**
+     * Whether the CBR bounding-box acceleration is enabled for this camera's renders.
+     * Applied to the global {@link Intersectable} switch at the start of {@link #renderImage()}.
+     */
+    private boolean _cbr = false;
+
+    /**
      * Private constructor to prevent direct instantiation. Use the Builder to create instances of Camera.
      */
     private Camera() {
@@ -124,6 +131,7 @@ public class Camera implements Cloneable {
      * @return the camera object itself
      */
     public Camera renderImage() {
+        Intersectable.setCBR(_cbr);
         pixelManager = new PixelManager(_nY, _nX, printInterval);
         return switch (threadsCount) {
             case 0 -> renderImageNoThreads();
@@ -620,6 +628,20 @@ public class Camera implements Cloneable {
         public Builder setDebugPrint(double interval) {
             if (interval < 0) throw new IllegalArgumentException("interval parameter must be non-negative");
             _camera.printInterval = interval;
+            return this;
+        }
+
+        /**
+         * Enables or disables the CBR (Conservative Bounding Region) bounding-box
+         * acceleration for renders produced by the built camera. Disabled by default.
+         * Delegates to the global {@link Intersectable} switch when the camera renders,
+         * so each render runs in exactly the configured mode.
+         *
+         * @param enabled {@code true} to enable bounding-box early rejection
+         * @return The Builder instance for chaining method calls.
+         */
+        public Builder setCBR(boolean enabled) {
+            _camera._cbr = enabled;
             return this;
         }
     }

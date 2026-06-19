@@ -2,6 +2,7 @@ package geometries.impl;
 
 import java.util.List;
 
+import primitives.AABB;
 import primitives.Point;
 import primitives.Ray;
 import primitives.Vector;
@@ -40,6 +41,11 @@ public final class Sphere extends RadialGeometry {
     @Override
     public Vector getNormal(Point point) {
         return point.subtract(_center).normalize();
+    }
+
+    @Override
+    protected AABB createBoundingBox() {
+        return AABB.around(_center).expand(_radius);
     }
 
     @Override

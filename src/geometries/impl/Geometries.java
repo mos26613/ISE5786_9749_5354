@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import geometries.api.Intersectable;
+import primitives.AABB;
 import primitives.Ray;
 
 /**
@@ -32,6 +33,19 @@ public class Geometries extends Intersectable {
      */
     public void add(Intersectable... geometries) {
         _geometries.addAll(List.of(geometries));
+    }
+
+    @Override
+    protected AABB createBoundingBox() {
+        // The composite box is the union of the children's boxes. If any child is unbounded
+        // (null box) the whole collection cannot be bounded, so report unbounded as well.
+        AABB result = null;
+        for (Intersectable geometry : _geometries) {
+            AABB box = geometry.getBoundingBox();
+            if (box == null) return null;
+            result = result == null ? box : result.union(box);
+        }
+        return result;
     }
 
     @Override
