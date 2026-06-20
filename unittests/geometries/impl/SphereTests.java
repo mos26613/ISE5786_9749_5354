@@ -9,6 +9,7 @@ import primitives.Vector;
 
 import static java.lang.Math.sqrt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
@@ -52,6 +53,10 @@ class SphereTests {
      * Error message when no intersections were expected
      */
     private static final String NO_INTERSECTION = "Expected no intersections (null)";
+    /**
+     * Tolerance for floating-point comparisons
+     */
+    private static final double DELTA = 1e-6;
 
     /**
      * Default constructor for SphereTests to satisfy Javadoc tool
@@ -158,5 +163,25 @@ class SphereTests {
         // origin=(1,0.5,0), vec-to-center=(0,-0.5,0), direction=(1,0,0): dot=0; distance=0.5 < radius
         result = SPHERE.findIntersections(new Ray(new Point(1, 0.5, 0), V100));
         assertEquals(List.of(new Point(1 + sqrt(3 / 4.0), 0.5, 0)), result, WRONG_POINT);
+    }
+
+    /**
+     * Regression test for {@link Sphere#findIntersections(Ray)}: a ray passing through the
+     * center of a distant sphere makes the squared perpendicular distance round to a tiny
+     * negative value, which used to make {@code sqrt(...)} return {@code NaN} and produce a
+     * bogus {@code NaN} intersection point. The two hits must be real points on the surface.
+     */
+    @Test
+    void testFindIntersectionsThroughDistantCenter() {
+        Point center = new Point(0, 40, -60);
+        Sphere sphere = new Sphere(center, 6);
+
+        // =============== Boundary Values Tests ==================
+        // BV01: ray aimed straight at the far center (d^2 cancels to ~0) — 2 finite surface hits
+        List<Point> result = sphere.findIntersections(new Ray(new Point(0, 0, 100), new Vector(0, 40, -160)));
+        assertNotNull(result, NO_INTERSECTION);
+        assertEquals(2, result.size(), WRONG_COUNT);
+        for (Point p : result)
+            assertEquals(6, p.distance(center), DELTA, "Intersection must lie on the sphere surface (no NaN)");
     }
 }

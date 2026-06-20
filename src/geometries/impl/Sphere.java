@@ -60,7 +60,10 @@ public final class Sphere extends RadialGeometry {
 
         Vector u = O.subtract(p0);
         double tm = alignZero(v.dotProduct(u));
-        double d = alignZero(sqrt(u.lengthSquared() - tm * tm));
+        // d^2 (the squared perpendicular distance from the center to the ray line) is
+        // mathematically non-negative; clamp any floating-point noise to 0 so that a ray
+        // passing through (or very near) the center cannot make sqrt yield NaN.
+        double d = alignZero(sqrt(Math.max(0, u.lengthSquared() - tm * tm)));
 
         // Check if the ray is tangent to the sphere surface or if the ray is outside the sphere
         if (alignZero(d - _radius) >= 0) return null;
