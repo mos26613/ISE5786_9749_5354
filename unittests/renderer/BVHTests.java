@@ -38,27 +38,39 @@ class BVHTests {
         Intersectable.setCBR(false);
     }
 
-    /**
-     * Verifies that grouping the bodies into a manual hierarchy of nested {@link Geometries}
-     * produces the same rendered result as the flat list — for rays that hit and rays that
-     * miss, with CBR both off and on. Comparison is order-insensitive (the composite
-     * concatenates child hits in iteration order): equal total hit count and, crucially, the
-     * same closest intersection, which is what the ray tracer actually shades.
-     */
+    /** The manually-grouped hierarchy must render identically to the flat list. */
     @Test
     void testManualHierarchyMatchesFlat() {
+        assertMatchesFlat(BVHScene.hierarchy());
+    }
+
+    /** The automatically-built hierarchy must render identically to the flat list. */
+    @Test
+    void testAutoHierarchyMatchesFlat() {
+        assertMatchesFlat(BVHScene.auto());
+    }
+
+    /**
+     * Verifies that an alternative organisation of the same bodies produces the same rendered
+     * result as the flat list — for rays that hit and rays that miss, with CBR both off and
+     * on. Comparison is order-insensitive (the composite concatenates child hits in iteration
+     * order): equal total hit count and, crucially, the same closest intersection, which is
+     * what the ray tracer actually shades.
+     *
+     * @param other the hierarchy (manual or automatic) to compare against the flat list
+     */
+    private void assertMatchesFlat(Geometries other) {
         Geometries flat = BVHScene.flat();
-        Geometries hierarchy = BVHScene.hierarchy();
 
         for (Ray ray : probeRays()) {
             for (boolean cbr : new boolean[]{false, true}) {
                 Intersectable.setCBR(cbr);
                 List<Point> flatHits = flat.findIntersections(ray);
-                List<Point> hierarchyHits = hierarchy.findIntersections(ray);
+                List<Point> otherHits = other.findIntersections(ray);
 
                 assertEquals(flatHits == null ? 0 : flatHits.size(),
-                        hierarchyHits == null ? 0 : hierarchyHits.size(), COUNT_MSG);
-                assertEquals(ray.findClosestPoint(flatHits), ray.findClosestPoint(hierarchyHits), CLOSEST_MSG);
+                        otherHits == null ? 0 : otherHits.size(), COUNT_MSG);
+                assertEquals(ray.findClosestPoint(flatHits), ray.findClosestPoint(otherHits), CLOSEST_MSG);
             }
         }
     }
@@ -85,6 +97,33 @@ class BVHTests {
     @Test
     void timeManualCBR() {
         runTiming("bvh_manual_CBR", BVHScene.hierarchy(), true);
+    }
+
+    /** Automatic hierarchy, CBR off — grouping alone gives no benefit (≈ baseline). */
+    @Test
+    void timeAutoNoCBR() {
+        runAutoTiming("bvh_auto_noCBR", false);
+    }
+
+    /** Automatic hierarchy, CBR on — the auto-built BVH, expect ≈×7–×10 vs flat+CBR. */
+    @Test
+    void timeAutoCBR() {
+        runAutoTiming("bvh_auto_CBR", true);
+    }
+
+    /**
+     * Builds the automatic hierarchy with its build time measured separately from the render,
+     * then renders and times it.
+     *
+     * @param name the output image file name and label
+     * @param cbr  whether to enable the CBR early-reject
+     */
+    private void runAutoTiming(String name, boolean cbr) {
+        long buildStart = System.nanoTime();
+        Geometries auto = BVHScene.auto();
+        long buildMs = (System.nanoTime() - buildStart) / 1_000_000;
+        System.out.println("[BVH] auto build overhead: " + buildMs + " ms");
+        runTiming(name, auto, cbr);
     }
 
     /**

@@ -111,6 +111,35 @@ public class AABB {
     }
 
     /**
+     * Returns the centroid coordinate of the box along one axis. Used to order geometries
+     * when partitioning them for an automatic bounding-volume hierarchy.
+     *
+     * @param axis the axis: 0 for X, 1 for Y, 2 for Z
+     * @return the midpoint of the box on that axis
+     */
+    public double center(int axis) {
+        return switch (axis) {
+            case 0 -> (_min._d1() + _max._d1()) / 2;
+            case 1 -> (_min._d2() + _max._d2()) / 2;
+            default -> (_min._d3() + _max._d3()) / 2;
+        };
+    }
+
+    /**
+     * Returns the index of the box's longest dimension, used to pick the split axis of an
+     * automatic bounding-volume hierarchy.
+     *
+     * @return 0 if X is longest, 1 if Y, 2 if Z (ties resolved X &gt; Y &gt; Z)
+     */
+    public int longestAxis() {
+        double dx = _max._d1() - _min._d1();
+        double dy = _max._d2() - _min._d2();
+        double dz = _max._d3() - _min._d3();
+        if (dx >= dy && dx >= dz) return 0;
+        return dy >= dz ? 1 : 2;
+    }
+
+    /**
      * Boolean slab test: reports whether the given ray meets this box.
      * <p>
      * No intersection point is computed. The ray is intersected against the three

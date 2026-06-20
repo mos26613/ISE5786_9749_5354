@@ -46,6 +46,8 @@ public final class BVHScene {
     private static final double MAX_R = 7;
     /** Square image side length used by every timing run. */
     public static final int RESOLUTION = 400;
+    /** Maximum geometries per leaf node for the automatic BVH build (tunable). */
+    public static final int AUTO_LEAF_SIZE = 2;
 
     /** Non-instantiable helper. */
     private BVHScene() {
@@ -126,6 +128,17 @@ public final class BVHScene {
             root.add(new Geometries(cluster.toArray(new Intersectable[0])));
         }
         return root;
+    }
+
+    /**
+     * Builds the scene as an <em>automatically</em>-organised bounding-volume hierarchy: the
+     * flat collection is reorganised by {@link Geometries#buildBVH(int)}. Same bodies as
+     * {@link #flat()} / {@link #hierarchy()}, so timing and images are comparable.
+     *
+     * @return an automatically-built hierarchy of the demo bodies
+     */
+    public static Geometries auto() {
+        return flat().buildBVH(AUTO_LEAF_SIZE);
     }
 
     /**

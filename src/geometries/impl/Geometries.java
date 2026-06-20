@@ -1,6 +1,7 @@
 package geometries.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import geometries.api.Intersectable;
@@ -33,6 +34,97 @@ public class Geometries extends Intersectable {
      */
     public void add(Intersectable... geometries) {
         _geometries.addAll(List.of(geometries));
+    }
+
+    /**
+     * Returns a flat collection of this hierarchy's leaf geometries, descending recursively
+     * into any nested {@code Geometries}. Used as the starting point for the automatic BVH
+     * build, so a scene can be assembled in any structure and still be reorganised.
+     *
+     * @return a new flat {@code Geometries} containing every leaf geometry
+     */
+    public Geometries flatten() {
+        List<Intersectable> leaves = new ArrayList<>();
+        flattenInto(leaves);
+        return new Geometries(leaves.toArray(new Intersectable[0]));
+    }
+
+    /**
+     * Recursively collects the leaf geometries of this hierarchy into the given list.
+     *
+     * @param leaves the accumulator the leaves are added to
+     */
+    private void flattenInto(List<Intersectable> leaves) {
+        for (Intersectable geometry : _geometries) {
+            if (geometry instanceof Geometries sub) sub.flattenInto(leaves);
+            else leaves.add(geometry);
+        }
+    }
+
+    /**
+     * Automatically reorganises this collection into a bounding-volume hierarchy of nested
+     * {@code Geometries}, so the CBR boxes can prune whole subtrees at render time. The
+     * collection is first flattened to its leaves; bounded leaves are recursively split, and
+     * unbounded (infinite) leaves are attached at the root so they are always tested. The
+     * source collection is not modified — a new hierarchy is returned.
+     *
+     * @param maxLeafSize the maximum number of geometries allowed in a leaf node (≥ 1)
+     * @return a new hierarchical {@code Geometries} equivalent to this one
+     */
+    public Geometries buildBVH(int maxLeafSize) {
+        List<Intersectable> leaves = new ArrayList<>();
+        flattenInto(leaves);
+
+        List<Intersectable> bounded = new ArrayList<>();
+        List<Intersectable> unbounded = new ArrayList<>();
+        for (Intersectable leaf : leaves) {
+            if (leaf.getBoundingBox() == null) unbounded.add(leaf);
+            else bounded.add(leaf);
+        }
+
+        // No infinite bodies: the bounded subtree is already the whole hierarchy.
+        if (unbounded.isEmpty()) {
+            return bounded.isEmpty() ? new Geometries() : asGeometries(buildNode(bounded, maxLeafSize));
+        }
+
+        // Otherwise hold the bounded subtree and the always-tested infinite bodies together.
+        Geometries root = new Geometries();
+        if (!bounded.isEmpty()) root.add(buildNode(bounded, maxLeafSize));
+        root.add(unbounded.toArray(new Intersectable[0]));
+        return root;
+    }
+
+    /**
+     * Wraps an intersectable in a {@code Geometries} if it is not already one.
+     *
+     * @param node the node to return as a {@code Geometries} root
+     * @return {@code node} cast when it is a {@code Geometries}, otherwise a wrapper around it
+     */
+    private static Geometries asGeometries(Intersectable node) {
+        return node instanceof Geometries geometries ? geometries : new Geometries(node);
+    }
+
+    /**
+     * Recursively partitions bounded geometries into a balanced BVH node. Leaves whose count
+     * is within {@code maxLeafSize} become a single {@code Geometries}; larger sets are split
+     * at the median along the longest axis of their combined bounding box.
+     *
+     * @param items       the bounded geometries to partition (all have a finite box)
+     * @param maxLeafSize the maximum number of geometries allowed in a leaf node
+     * @return the root intersectable of the built subtree
+     */
+    private static Intersectable buildNode(List<Intersectable> items, int maxLeafSize) {
+        if (items.size() <= maxLeafSize) return new Geometries(items.toArray(new Intersectable[0]));
+
+        AABB bounds = items.getFirst().getBoundingBox();
+        for (int i = 1; i < items.size(); i++) bounds = bounds.union(items.get(i).getBoundingBox());
+        int axis = bounds.longestAxis();
+
+        items.sort(Comparator.comparingDouble(item -> item.getBoundingBox().center(axis)));
+        int mid = items.size() / 2;
+        Intersectable left = buildNode(new ArrayList<>(items.subList(0, mid)), maxLeafSize);
+        Intersectable right = buildNode(new ArrayList<>(items.subList(mid, items.size())), maxLeafSize);
+        return new Geometries(left, right);
     }
 
     @Override
