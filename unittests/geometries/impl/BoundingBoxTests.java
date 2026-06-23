@@ -49,7 +49,7 @@ class BoundingBoxTests {
     }
 
     /**
-     * Test method for {@link Triangle#createBoundingBox()}.
+     * Test method for {@link Polygon#createBoundingBox()} as inherited by {@link Triangle}.
      */
     @Test
     void testTriangleBox() {
@@ -58,6 +58,19 @@ class BoundingBoxTests {
         Triangle triangle = new Triangle(new Point(0, 0, 0), new Point(2, 0, 0), new Point(0, 3, 1));
         assertEquals(new AABB(new Point(0, 0, 0), new Point(2, 3, 1)),
                 triangle.getBoundingBox(), WRONG_BOX);
+    }
+
+    /**
+     * Test method for {@link Polygon#createBoundingBox()}.
+     */
+    @Test
+    void testPolygonBox() {
+        // ============ Equivalence Partitions Tests ==============
+        // EP01: polygon box is the per-axis min/max over all of its vertices
+        Polygon polygon = new Polygon(new Point(0, 0, 0), new Point(2, 0, 0),
+                new Point(2, 2, 0), new Point(0, 2, 0));
+        assertEquals(new AABB(new Point(0, 0, 0), new Point(2, 2, 0)),
+                polygon.getBoundingBox(), WRONG_BOX);
     }
 
     /**
