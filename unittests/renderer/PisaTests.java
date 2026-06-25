@@ -1,44 +1,28 @@
 package renderer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import geometries.api.Intersectable;
 import geometries.impl.Geometries;
-import primitives.Point;
-import primitives.Ray;
-import primitives.Vector;
 import scene.Scene;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
- * MP2 acceleration demo + measurement suite for the {@link PisaScene} (the Leaning Tower of
- * Pisa at golden hour: ~2,500 bodies of every geometry type, five lights of all supported
- * types, shadow + reflection + refraction, and the MP1 soft-shadow effect).
- * <p>
- * One correctness test proves the manual and automatic hierarchies render identically to the
- * flat list. The timing methods render the <em>same</em> scene/camera/MP1 mode under the
- * mandated configurations so the speedups can be read off the printed times:
+ * MP2 BVH measurement suite for the {@link PisaScene}: the mandated <b>12-cell</b> timing table
+ * {flat, manual, auto} × {no-CBR, CBR} × {MT off, on} — each cell is its own clearly-named test
+ * that renders the same scene/camera/MP1 mode and prints its wall-clock render time, so the
+ * speedups read straight off the printed numbers:
  * <ul>
- *   <li>the BVH algorithm axis — the 6-row table {no-accel, CBR} × {flat, manual, automatic},
- *       single-threaded, isolating the structure's speedup;</li>
- *   <li>the multithreading axis — accel-off and accel-on each rendered with MT on, which
- *       together with the single-threaded rows give the four corners
- *       {accel off/on} × {MT off/on} and separate the MT speedup from the algorithm speedup.</li>
+ *   <li>the BVH algorithm axis — the six single-threaded cells {no-accel, CBR} × {flat, manual,
+ *       automatic}, isolating the structure's speedup;</li>
+ *   <li>the multithreading axis — the same six cells rendered again with MT on, which together
+ *       give the four corners {accel off/on} × {MT off/on} and separate the MT speedup from the
+ *       algorithm speedup.</li>
  * </ul>
- * Finally, a high-quality beauty render (and an optional hard-shadow counterpart) produces the
- * submission image. Every parameter lives in {@link PisaScene}; nothing is hard-coded here.
+ * Correctness (flat = manual = auto) and the beauty renders live in {@link PisaSceneTests}. Every
+ * parameter lives in {@link PisaScene}; nothing is hard-coded here.
  */
 class PisaTests {
-
-    /** Assertion message for a hit-count mismatch between a hierarchy and the flat list. */
-    private static final String COUNT_MSG = "Hierarchy returned a different number of hits than the flat list";
-    /** Assertion message for a closest-hit mismatch between a hierarchy and the flat list. */
-    private static final String CLOSEST_MSG = "Hierarchy returned a different closest hit than the flat list";
 
     /** Default constructor to satisfy the Javadoc tool. */
     PisaTests() {
@@ -50,42 +34,7 @@ class PisaTests {
         Intersectable.setCBR(false);
     }
 
-    // ============================ Correctness ============================
-
-    /** The manual hierarchy must render identically to the flat list (CBR off and on). */
-    @Test
-    void testManualHierarchyMatchesFlat() {
-        assertMatchesFlat(PisaScene.hierarchy());
-    }
-
-    /** The automatic BVH must render identically to the flat list (CBR off and on). */
-    @Test
-    void testAutoHierarchyMatchesFlat() {
-        assertMatchesFlat(PisaScene.auto());
-    }
-
-    /**
-     * Verifies that an alternative organisation of the same bodies yields the same rendered
-     * result as the flat list — equal hit count and, crucially, the same closest intersection
-     * (what the ray tracer actually shades) — over a fan of probe rays, with CBR off and on.
-     *
-     * @param other the hierarchy (manual or automatic) to compare against the flat list
-     */
-    private void assertMatchesFlat(Geometries other) {
-        Geometries flat = PisaScene.flat();
-        for (Ray ray : probeRays()) {
-            for (boolean cbr : new boolean[]{false, true}) {
-                Intersectable.setCBR(cbr);
-                List<Point> flatHits = flat.findIntersections(ray);
-                List<Point> otherHits = other.findIntersections(ray);
-                assertEquals(flatHits == null ? 0 : flatHits.size(),
-                        otherHits == null ? 0 : otherHits.size(), COUNT_MSG);
-                assertEquals(ray.findClosestPoint(flatHits), ray.findClosestPoint(otherHits), CLOSEST_MSG);
-            }
-        }
-    }
-
-    // ============================ BVH algorithm axis (6-row table, MT off) ============================
+    // ============================ BVH algorithm axis (6 cells, MT off) ============================
 
     /** Flat list, CBR off — the no-acceleration baseline (= accel OFF + MT OFF). */
     @Test
@@ -123,7 +72,7 @@ class PisaTests {
         runAutoTiming("pisa_auto_CBR", true, 0);
     }
 
-    // ============================ Multithreading axis ============================
+    // ====== Multithreading axis — the same six cells, MT on (completes the 12-cell table) ======
 
     /** Flat list, CBR off, multithreaded — accel OFF + MT ON (pairs with {@link #timeFlatNoCBR}). */
     @Test
@@ -131,40 +80,34 @@ class PisaTests {
         runTiming("pisa_flat_noCBR_MT", PisaScene.flat(), false, -2);
     }
 
+    /** Flat list, CBR on, multithreaded. */
+    @Test
+    void timeFlatCBR_MT() {
+        runTiming("pisa_flat_CBR_MT", PisaScene.flat(), true, -2);
+    }
+
+    /** Manual hierarchy, CBR off, multithreaded. */
+    @Test
+    void timeManualNoCBR_MT() {
+        runTiming("pisa_manual_noCBR_MT", PisaScene.hierarchy(), false, -2);
+    }
+
+    /** Manual hierarchy, CBR on, multithreaded. */
+    @Test
+    void timeManualCBR_MT() {
+        runTiming("pisa_manual_CBR_MT", PisaScene.hierarchy(), true, -2);
+    }
+
+    /** Automatic BVH, CBR off, multithreaded. */
+    @Test
+    void timeAutoNoCBR_MT() {
+        runAutoTiming("pisa_auto_noCBR_MT", false, -2);
+    }
+
     /** Automatic BVH, CBR on, multithreaded — accel ON + MT ON (the fastest corner). */
     @Test
     void timeAutoCBR_MT() {
         runAutoTiming("pisa_auto_CBR_MT", true, -2);
-    }
-
-    // ============================ Beauty render ============================
-
-    /** The submission image: full resolution, antialiasing, dense soft shadows, BVH + MT. */
-    @Test
-    void pisaGoldenHour() {
-        Geometries geometries = PisaScene.auto();
-        Scene scene = PisaScene.scene(geometries);
-        Camera camera = PisaScene.beautyCamera(scene, true).setCBR(true).build();
-        scene.geometries.getBoundingBox();
-
-        long start = System.nanoTime();
-        camera.renderImage();
-        System.out.println("[PISA] pisaGoldenHour (soft): " + (System.nanoTime() - start) / 1_000_000 + " ms");
-        camera.writeToImage("pisaGoldenHour");
-    }
-
-    /** The same view with hard shadows, to show the MP1 soft-shadow effect by comparison. */
-    @Test
-    void pisaGoldenHourHard() {
-        Geometries geometries = PisaScene.auto();
-        Scene scene = PisaScene.scene(geometries);
-        Camera camera = PisaScene.beautyCamera(scene, false).setCBR(true).build();
-        scene.geometries.getBoundingBox();
-
-        long start = System.nanoTime();
-        camera.renderImage();
-        System.out.println("[PISA] pisaGoldenHour (hard): " + (System.nanoTime() - start) / 1_000_000 + " ms");
-        camera.writeToImage("pisaGoldenHourHard");
     }
 
     // ============================ Timing helpers ============================
@@ -204,27 +147,5 @@ class PisaTests {
 
         System.out.println("[PISA] " + name + ": " + ms + " ms");
         camera.writeToImage(name);
-    }
-
-    /**
-     * Builds a fan of probe rays from the camera position across the scene (hitting the tower,
-     * pool, trees and ground at many angles) plus a few guaranteed misses.
-     *
-     * @return the probe rays
-     */
-    private static List<Ray> probeRays() {
-        List<Ray> rays = new ArrayList<>();
-        Point eye = new Point(430, 305, 860);
-        int n = 11;
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++) {
-                double x = -520 + 1040.0 * i / (n - 1);
-                double y = 520.0 * j / (n - 1);
-                rays.add(new Ray(eye, new Point(x, y, -200).subtract(eye)));
-            }
-        rays.add(new Ray(eye, new Vector(0, 1, 0)));
-        rays.add(new Ray(eye, new Vector(0, 0, 1)));
-        rays.add(new Ray(eye, new Vector(1, 0.2, 0)));
-        return rays;
     }
 }

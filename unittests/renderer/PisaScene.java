@@ -111,8 +111,8 @@ public final class PisaScene {
     public static final int BEAUTY_H = 900;
     /** Antialiasing samples per axis for the beauty render (3 -> 9 rays per pixel). */
     public static final int BEAUTY_AA = 3;
-    /** Soft-shadow samples per axis for the beauty render (9 -> ~64 circular samples). */
-    public static final int BEAUTY_SS = 9;
+    /** Soft-shadow samples per axis for the beauty render (13 -> ~130 circular samples). */
+    public static final int BEAUTY_SS = 13;
 
     /** Camera position: elevated, front-right of the tower, looking across the pool. */
     private static final Point CAM_POS = new Point(470, 332, 945);
@@ -124,11 +124,12 @@ public final class PisaScene {
     private static final double VP_DIST = 720;
 
     // ---- Lighting (bright, linear-RGB; the renderer applies no gamma) ----
-    /** Direction the low golden sun light travels: from behind-left toward the camera, grazing
-     * down the piazza so the tower throws a long shadow toward the viewer. */
-    private static final Vector SUN_DIR = new Vector(0.42, -0.30, 0.86);
-    /** Area diameter of the warm lantern point lights (soft-shadow penumbra width). */
-    private static final double LANTERN_SIZE = 42;
+    /** Direction the warm directional key light travels: low and grazing from the front-left, to
+     * rake the tower's columns (lit left, shadowed right) without flooding the ground. */
+    private static final Vector SUN_DIR = new Vector(0.82, -0.18, -0.52);
+    /** Area diameter of the warm lantern point lights — large, for wide, clearly-visible
+     * soft-shadow penumbrae. */
+    private static final double LANTERN_SIZE = 150;
 
     // ============================ Shared materials ============================
 
@@ -173,6 +174,8 @@ public final class PisaScene {
     };
     /** Height of a lamp post (the glow sphere sits at its top). */
     private static final double LAMP_H = 118;
+    /** Height of a finite flag pole (the tricolore hangs near its top, capped by a finial). */
+    private static final double POLE_H = 330;
 
     /** Non-instantiable helper. */
     private PisaScene() {
@@ -208,14 +211,16 @@ public final class PisaScene {
      * The genuinely infinite bodies, which must sit at the hierarchy root (their boxes are null,
      * so nesting them inside a bounded group would null that group's box and disable pruning).
      *
-     * @return the ground plane and the decorative banner-pole tubes
+     * @return the green-lawn ground plane and two distant standard-pole tubes
      */
     private static List<Intersectable> infiniteBodies() {
         List<Intersectable> out = new ArrayList<>();
-        out.add(new Plane(new Point(0, -1, 0), Vector.AXIS_Y)
-                .setMaterial(solid(0.56, 0.47, 0.33, 0.7, 0.06, 18, 0.52)));
-        for (double[] p : POLES)
-            out.add(new Tube(2.4, new Ray(new Point(p[0], 0, p[1]), Vector.AXIS_Y)).setMaterial(METAL));
+        out.add(new Plane(new Point(0, -1, 0), Vector.AXIS_Y)        // the green "Field of Miracles" lawn
+                .setMaterial(solid(0.16, 0.34, 0.15, 0.7, 0.05, 16, 0.45)));
+        // two thin distant standard poles tucked into the back tree line — the (infinite) Tube
+        // type, kept subtle (the cypresses break them up)
+        for (double[] p : new double[][]{{-300, -480}, {300, -490}})
+            out.add(new Tube(1.7, new Ray(new Point(p[0], 0, p[1]), Vector.AXIS_Y)).setMaterial(METAL));
         return out;
     }
 
@@ -355,8 +360,8 @@ public final class PisaScene {
     // ============================ Piazza, pool, planting ============================
 
     /**
-     * Builds the marble piazza as a grid of square {@link Polygon} tiles with slight warm-tone
-     * variation and a faint reflective sheen.
+     * Builds the marble piazza as a grid of square {@link Polygon} tiles in cool grey-white
+     * marble (slight per-tile tone variation), a cool counterpoint to the green lawn.
      *
      * @param rnd the shared random source (per-tile tone jitter)
      * @return the tile bodies
@@ -372,8 +377,8 @@ public final class PisaScene {
                 double z1 = z0 + TILE_SIZE - 2 * TILE_GAP;
                 double v = 0.82 + rnd.nextDouble() * 0.12;
                 Material m = new Material()
-                        .setKD(new Double3(0.74 * v, 0.70 * v, 0.62 * v)).setKS(0.22).setShininess(80)
-                        .setKA(new Double3(0.5 * v, 0.48 * v, 0.43 * v));
+                        .setKD(new Double3(0.64 * v, 0.66 * v, 0.69 * v)).setKS(0.22).setShininess(80)
+                        .setKA(new Double3(0.40 * v, 0.42 * v, 0.46 * v));
                 out.add(new Polygon(new Point(x0, 0, z0), new Point(x1, 0, z0),
                         new Point(x1, 0, z1), new Point(x0, 0, z1)).setMaterial(m));
             }
@@ -447,10 +452,10 @@ public final class PisaScene {
             double z = (rnd.nextDouble() * 2 - 1) * span;
             if (x > -312 && x < 312 && z > 138 && z < 392) continue; // skip the pool footprint
             double r = 2.5 + rnd.nextDouble() * 4.5;
-            boolean grass = rnd.nextDouble() < 0.45;
+            boolean grass = rnd.nextDouble() < 0.82;   // mostly grassy tufts on the lawn, a few stones
             Material m = grass
-                    ? solid(0.20, 0.34 + rnd.nextDouble() * 0.1, 0.14, 0.7, 0.1, 20, 0.35)
-                    : solid(0.50 + rnd.nextDouble() * 0.15, 0.46, 0.40, 0.7, 0.2, 40, 0.45);
+                    ? solid(0.14, 0.30 + rnd.nextDouble() * 0.12, 0.13, 0.7, 0.1, 20, 0.30)
+                    : solid(0.46 + rnd.nextDouble() * 0.14, 0.43, 0.38, 0.7, 0.2, 40, 0.42);
             out.add(new Sphere(new Point(x, r * 0.7, z), r).setMaterial(m));
         }
         return out;
@@ -483,6 +488,13 @@ public final class PisaScene {
                     .setMaterial(STONE));
             out.add(new Sphere(new Point(mm[0], mm[1] + mm[3], mm[2]), mm[3]).setMaterial(MIRROR));
         }
+
+        // opaque stone garden spheres on open tile beside the front-left lantern (LAMPS[4]) — the
+        // deliberate soft-shadow showcase: that area light throws their wide penumbrae toward camera.
+        // Each row is {x, radius, z}; the sphere rests on the tiles (center y = radius).
+        double[][] balls = {{-95, 30, 495}, {30, 22, 540}, {-160, 26, 470}};
+        for (double[] s : balls)
+            out.add(new Sphere(new Point(s[0], s[1], s[2]), s[1]).setMaterial(STONE));
 
         // low shrubs dotted near the planting
         double[][] bush = {{-250, -120}, {220, -160}, {-150, -330}, {330, 70}, {-360, 50}, {120, -400}};
@@ -517,7 +529,18 @@ public final class PisaScene {
                     .setMaterial(solid(0.5, 0.5, 0.5, 0.4, 0.1, 30, 0.4)));
         }
 
-        // an Italian tricolore flag on each bronze flag pole (green / white / red bands)
+        // finite bronze flag poles, each capped with a glinting gold finial ball + spike
+        Material gold = solid(0.85, 0.62, 0.18, 0.6, 0.5, 160, 0.5);
+        for (double[] pl : POLES) {
+            out.add(new Cylinder(3.2, new Ray(new Point(pl[0], 0, pl[1]), Vector.AXIS_Y), POLE_H)
+                    .setMaterial(METAL));
+            out.add(new Sphere(new Point(pl[0], POLE_H + 8, pl[1]), 8)
+                    .setEmission(new Color(255, 205, 110).scale(0.55)).setMaterial(gold));
+            out.add(new Cylinder(1.6, new Ray(new Point(pl[0], POLE_H + 14, pl[1]), Vector.AXIS_Y), 16)
+                    .setMaterial(gold));
+        }
+
+        // an Italian tricolore flag near the top of each pole (green / white / red bands)
         Color[] tri = {new Color(70, 150, 78), new Color(240, 240, 230), new Color(206, 56, 50)};
         for (double[] pl : POLES) {
             double inward = pl[0] < 0 ? 1 : -1;     // flag hangs toward the piazza center
@@ -536,21 +559,17 @@ public final class PisaScene {
     }
 
     /**
-     * Builds the warm dusk sky furniture: a big emissive sun disk low on the horizon and a few
-     * soft cloud puffs (clusters of faint emissive spheres) high and far behind the tower.
+     * Builds the dusk sky furniture: a few soft cloud puffs (clusters of faint emissive spheres)
+     * high and far behind the tower.
      *
      * @return the sky bodies
      */
     private static List<Intersectable> sky() {
         List<Intersectable> out = new ArrayList<>();
-        // the low sun, clearly visible to the left of the tower (its light is the directional sun)
-        out.add(new Sphere(new Point(-470, 338, -880), 188)
-                .setEmission(new Color(255, 233, 178))
-                .setMaterial(solid(0.2, 0.2, 0.2, 0, 0, 1, 0.2)));
         double[][] clouds = {{-560, 560, -1250}, {380, 650, -1400}, {-120, 500, -1150}};
         for (double[] c : clouds)
             for (int i = 0; i < 4; i++) {
-                Color glow = new Color(255, 205, 158).scale(0.78);
+                Color glow = new Color(255, 198, 156).scale(0.4);   // dim dusk clouds (no burn)
                 out.add(new Sphere(new Point(c[0] + i * 72 - 100, c[1] + (i % 2) * 26, c[2]), 62)
                         .setEmission(glow).setMaterial(solid(0.3, 0.3, 0.3, 0.1, 0, 1, 0.3)));
             }
@@ -560,38 +579,40 @@ public final class PisaScene {
     // ============================ Scene & camera ============================
 
     /**
-     * Wraps the given body collection in the golden-hour scene: warm sky background and ambient,
-     * a low directional sun (the long hard shadow), two warm facade up-light spots, and three
-     * warm lantern point lights — five lights spanning all supported types, the point/spot ones
-     * sized for soft shadows.
+     * Wraps the given body collection in the moody twilight scene: a cool dusk background and
+     * ambient, a warm low directional key light raking the tower, two gentle warm facade spot
+     * fills, and three bright lantern point lights — six lights spanning all three supported
+     * types, the three lanterns being large area lights for the soft-shadow showcase.
      *
      * @param geometries the flat or hierarchical collection to render
      * @return the ready-to-render scene
      */
     public static Scene scene(Geometries geometries) {
-        Scene scene = new Scene("Pisa Golden Hour")
-                .setBackground(new Color(255, 172, 112))
-                .setAmbientLight(new AmbientLight(new Color(156, 133, 108)));
+        Scene scene = new Scene("Pisa Sunset")
+                .setBackground(new Color(150, 116, 122))
+                .setAmbientLight(new AmbientLight(new Color(52, 58, 74)));
         scene.setGeometries(geometries);
 
-        // the low golden sun: strong, warm, casts the tower's long shadow (hard — no size)
-        scene.lights.add(new DirectionalLight(new Color(610, 430, 250), SUN_DIR));
+        // warm directional KEY light (low, front-left) — the main shading on the tower: rakes the
+        // columns into a lit/shadowed gradient. Low elevation so it models the facade without
+        // flooding the ground, keeping the lantern soft-shadow contrast.
+        scene.lights.add(new DirectionalLight(new Color(340, 240, 150), SUN_DIR));
 
-        // two warm spot up-lights washing the camera-facing facade (kept hard as bright fill
-        // against the backlight; the soft-shadow showcase comes from the lantern point lights)
-        scene.lights.add(new SpotLight(new Color(540, 372, 208),
+        // two gentle warm spot up-lights — soft fill that lifts the directional's shadow side
+        scene.lights.add(new SpotLight(new Color(150, 103, 60),
                 new Point(150, 12, 250), new Vector(-0.55, 1, -0.6))
                 .setKl(2E-4).setKq(5E-8));
-        scene.lights.add(new SpotLight(new Color(470, 332, 196),
+        scene.lights.add(new SpotLight(new Color(135, 92, 54),
                 new Point(-175, 12, 258), new Vector(0.5, 1, -0.6))
                 .setKl(2E-4).setKq(5E-8));
 
-        // three warm lantern point lights at lamp-post glows (soft)
+        // the three lanterns are the localized KEY lights: a bright core with real quadratic
+        // falloff so each casts a visible warm pool, large area size for wide soft penumbrae
         int[] lit = {0, 1, 4};
         for (int idx : lit) {
             Point glow = new Point(LAMPS[idx][0], LAMP_H + 9, LAMPS[idx][1]);
-            scene.lights.add(new PointLight(new Color(330, 214, 110), glow)
-                    .setKl(3E-4).setKq(4E-7).setSize(LANTERN_SIZE));
+            scene.lights.add(new PointLight(new Color(900, 590, 295), glow)
+                    .setKl(1E-4).setKq(6E-6).setSize(LANTERN_SIZE));
         }
         return scene;
     }
