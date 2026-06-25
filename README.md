@@ -7,7 +7,7 @@ Built for the course **“Mini Project in Introduction to Software Engineering�
 <p align="center">
   <img src="images/pisaGoldenHour.png" alt="Leaning Tower of Pisa rendered at golden hour with soft shadows" width="80%">
   <br>
-  <em>The Leaning Tower of Pisa at golden hour — soft shadows, multiple light sources, hundreds of geometries.</em>
+  <em>The Leaning Tower of Pisa at golden hour — soft shadows, six light sources, 2,465 geometries.</em>
 </p>
 
 ---
@@ -16,6 +16,7 @@ Built for the course **“Mini Project in Introduction to Software Engineering�
 
 - [Features](#-features)
 - [Gallery](#-gallery)
+- [Performance (MP2)](#-performance-mp2)
 - [Architecture](#-architecture)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
@@ -74,6 +75,52 @@ A classic Utah Teapot, rendered triangle-by-triangle.
 </p>
 
 > 💡 All images above are produced by the test suite and saved to the `images/` folder.
+
+---
+
+## ⚡ Performance (MP2)
+
+The acceleration work is benchmarked on one demanding scene — the **Leaning Tower of Pisa**: **2,465 geometries** lit by **6 light sources**, rendered at **640×480** with soft shadows (the MP1 effect kept on at quality). Each measurement is its own test that renders the *same* scene and camera and prints its wall-clock time, so the speedups read straight off the numbers.
+
+The two accelerators measured are **CBR** (Conservative Bounding Region — a per-object bounding-box early-reject) and **BVH** (Bounding Volume Hierarchy — grouping objects so a whole cluster can be skipped at once), each tested **without** and **with** multithreading.
+
+### Full timing table — Pisa scene (seconds)
+
+| Configuration | Single thread | Multithreaded |
+|---|--:|--:|
+| Flat list, no CBR *(baseline)* | 395.9 s | 44.3 s |
+| Flat list, CBR | 121.8 s | 12.9 s |
+| Manual BVH, no CBR | 397.6 s | 44.3 s |
+| Manual BVH, CBR | 40.5 s | 4.5 s |
+| Automatic BVH, no CBR | 665.1 s | 70.0 s |
+| **Automatic BVH, CBR** | **11.2 s** | **1.5 s** |
+
+> Each row corresponds to a saved `images/pisa_*` render. Note that a hierarchy *without* CBR gives no benefit — it is the box test that actually prunes rays.
+
+### The four corners & speedups
+
+| Configuration | Render time | Speedup vs. baseline |
+|---|--:|--:|
+| Acceleration OFF · MT OFF *(baseline)* | 395.9 s | 1× |
+| Acceleration OFF · MT ON | 44.3 s | 8.9× |
+| Acceleration ON · MT OFF | 11.2 s | 35.2× |
+| **Acceleration ON · MT ON** | **1.5 s** | **271.9×** |
+
+- **Multithreading alone** ≈ **8.9×** (≈7.7× averaged across all configurations).
+- **BVH + CBR alone** (single thread) ≈ **35.2×**.
+- **Both together** ≈ **272×** — from 6½ minutes down to **1.5 seconds**, with the automatic-BVH build cost (tens of milliseconds) negligible against the render.
+
+### BVH demo scene (400×400, single thread, milliseconds)
+
+A second, lighter scene isolates the structure speedup on its own:
+
+| Structure | No CBR | CBR |
+|---|--:|--:|
+| Flat list | 926 ms | 325 ms |
+| Manual BVH | 1003 ms | 32 ms |
+| Automatic BVH | 1935 ms | 35 ms |
+
+CBR alone speeds the flat scene ≈**2.8×**; automatic BVH **+** CBR reaches ≈**26×** over the no-acceleration baseline.
 
 ---
 
