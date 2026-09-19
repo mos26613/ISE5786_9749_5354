@@ -15,14 +15,14 @@ Developed as part of a Software Engineering project, this renderer is built from
 ## 📑 Table of Contents
 
 - [Features](#-features)
-- [Gallery](#--gallery)
+- [Gallery](#-gallery)
 - [Performance (MP2)](#-performance-mp2)
-- [Architecture](#--architecture)
+- [Architecture](#-architecture)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [How It Works](#-how-it-works)
 - [Design Principles](#-design-principles)
-- [Roadmap](#--roadmap)
+- [Roadmap](#-roadmap)
 
 ---
 
@@ -44,7 +44,7 @@ Developed as part of a Software Engineering project, this renderer is built from
 
 ---
 
-## 🖼️ Gallery
+## 🎨 Gallery
 
 ### Anti-Aliasing
 Several rays are cast through different points inside each pixel and averaged, removing the jagged "staircase" edges of single-ray rendering.
@@ -124,7 +124,7 @@ CBR alone speeds the flat scene ≈**2.8×**; automatic BVH **+** CBR reaches �
 
 ---
 
-## 🏗️ Architecture
+## 📐 Architecture
 
 The renderer follows a clean, layered design where each package has a single, well-defined responsibility:
 
@@ -235,7 +235,7 @@ This project is as much a software-engineering exercise as a graphics one. The c
 
 ---
 
-## 🗺️ Roadmap
+## 🎯 Roadmap
 
 The project is built in tagged stages:
 
