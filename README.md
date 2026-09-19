@@ -15,14 +15,14 @@ Developed as part of a Software Engineering project, this renderer is built from
 ## 📑 Table of Contents
 
 - [Features](#-features)
-- [Gallery](#-gallery)
+- [Gallery](--gallery)
 - [Performance (MP2)](#-performance-mp2)
-- [Architecture](#-architecture)
+- [Architecture](--architecture)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [How It Works](#-how-it-works)
 - [Design Principles](#-design-principles)
-- [Roadmap](#-roadmap)
+- [Roadmap](--roadmap)
 
 ---
 
