@@ -2,7 +2,7 @@
 
 > A from-scratch **ray-tracing renderer** written in pure Java — no graphics libraries, just math, light, and clean object-oriented design.
 
-Built for the course **“Mini Project in Introduction to Software Engineering” (151055)**, this renderer grows stage by stage from a handful of geometric primitives into a full physically-inspired rendering engine: shadows, reflections, transparent glass, soft area lights, anti-aliasing, multithreading, and spatial acceleration structures.
+Developed as part of a Software Engineering project, this renderer is built from core mathematical foundations into a full physically-inspired rendering engine: shadows, reflections, transparent glass, soft area lights, anti-aliasing, multithreading, and spatial acceleration structures.
 
 <p align="center">
   <img src="images/pisaGoldenHour.png" alt="Leaning Tower of Pisa rendered at golden hour with soft shadows" width="80%">
