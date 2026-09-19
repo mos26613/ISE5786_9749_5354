@@ -191,10 +191,7 @@ images/             Rendered output images
 3. Right-click any test class in `unittests/` (e.g. `renderer/PisaTests`) and choose **Run**.
 4. Rendered images appear in the `images/` folder.
 
-### Quick regression check
-`src/test/Main.java` is a lightweight entry point that exercises the core pipeline — run it and confirm it prints **no lines starting with `ERROR`**.
-
-> ℹ️ This is intentionally a dependency-light, IDE-driven project (per course requirements), so there is no `mvn`/`gradle` command. Rendering is driven entirely through the JUnit test classes, each of which sets up a scene, configures a camera, and writes an image.
+> ℹ️ This is intentionally a dependency-light, IDE-driven project, so there is no `mvn`/`gradle` command. Rendering is driven entirely through the JUnit test classes, each of which sets up a scene, configures a camera, and writes an image.
 
 ---
 
